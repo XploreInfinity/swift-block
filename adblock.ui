@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>580</width>
+    <height>437</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>580</width>
+    <height>437</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>580</width>
+    <height>437</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Adblock</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>2</number>
+     </property>
+     <property name="elideMode">
+      <enum>Qt::ElideNone</enum>
+     </property>
+     <property name="tabsClosable">
+      <bool>false</bool>
+     </property>
+     <property name="movable">
+      <bool>true</bool>
+     </property>
+     <property name="tabBarAutoHide">
+      <bool>false</bool>
+     </property>
+     <widget class="QWidget" name="sources_tab">
+      <attribute name="title">
+       <string>Host Sources</string>
+      </attribute>
+      <widget class="QWidget" name="sourcesForm_widget" native="true">
+       <property name="geometry">
+        <rect>
+         <x>200</x>
+         <y>70</y>
+         <width>361</width>
+         <height>191</height>
+        </rect>
+       </property>
+       <widget class="QPushButton" name="sourceSave_btn">
+        <property name="geometry">
+         <rect>
+          <x>230</x>
+          <y>150</y>
+          <width>111</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true"/>
+        </property>
+        <property name="text">
+         <string>&amp;Save and Apply</string>
+        </property>
+       </widget>
+       <widget class="QWidget" name="layoutWidget">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>50</y>
+          <width>331</width>
+          <height>91</height>
+         </rect>
+        </property>
+        <layout class="QFormLayout" name="formLayout">
+         <property name="verticalSpacing">
+          <number>30</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="QLabel" name="sourceName_lbl">
+           <property name="font">
+            <font>
+             <pointsize>11</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Source Name:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="sourceName_tf"/>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="sourceURL_lbl">
+           <property name="font">
+            <font>
+             <pointsize>11</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Source URL:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLineEdit" name="sourceURL_tf"/>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QLabel" name="editMode_lbl">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>20</y>
+          <width>231</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color:limegreen;font-weight:bold;</string>
+        </property>
+        <property name="text">
+         <string>Editing an existing source:</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QLabel" name="info_lbl">
+       <property name="geometry">
+        <rect>
+         <x>210</x>
+         <y>20</y>
+         <width>341</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Add a new hosts source or Select a source from the list to
+edit or delete.</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="sourceAdd_btn">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>100</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Add</string>
+       </property>
+      </widget>
+      <widget class="QListWidget" name="sourcesList">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>30</y>
+         <width>201</width>
+         <height>361</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="formStatus_lbl">
+       <property name="geometry">
+        <rect>
+         <x>210</x>
+         <y>270</y>
+         <width>331</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>ERROR</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="sourceDelete_btn">
+       <property name="geometry">
+        <rect>
+         <x>100</x>
+         <y>0</y>
+         <width>100</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Delete</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="deny_tab">
+      <attribute name="title">
+       <string>Deny List</string>
+      </attribute>
+      <widget class="QPlainTextEdit" name="customLst_edit">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>60</y>
+         <width>551</width>
+         <height>281</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="customSave_btn">
+       <property name="geometry">
+        <rect>
+         <x>350</x>
+         <y>350</y>
+         <width>91</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Save</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="customCancel_btn">
+       <property name="geometry">
+        <rect>
+         <x>460</x>
+         <y>350</y>
+         <width>91</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Undo Changes</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="customStatus_lbl">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>350</y>
+         <width>331</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>ERROR</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="customInfo_lbl">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>10</y>
+         <width>551</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>This is a custom list if you wish to block/redirect certain domains. Only accepts one rule per line</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="allow_tab">
+      <attribute name="title">
+       <string>Allow List</string>
+      </attribute>
+      <widget class="QPlainTextEdit" name="allowLst_edit">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>60</y>
+         <width>551</width>
+         <height>281</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="allowInfo_lbl">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>10</y>
+         <width>551</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>This is a custom allow list if you wish to allow certain domains. Only accepts one rule per line</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="allowCancel_btn">
+       <property name="geometry">
+        <rect>
+         <x>460</x>
+         <y>350</y>
+         <width>91</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Undo Changes</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="allowSave_btn">
+       <property name="geometry">
+        <rect>
+         <x>350</x>
+         <y>350</y>
+         <width>91</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Save</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="allowStatus_lbl">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>350</y>
+         <width>331</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>ERROR</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
