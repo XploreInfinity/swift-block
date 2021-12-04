@@ -41,7 +41,8 @@ def elevate(show_console=True, graphical=True):
 
         if sys.platform.startswith("linux"):
             print("pkexec env DISPLAY={0} XAUTHORITY={1}".format(os.environ.get("DISPLAY"),os.environ.get("XAUTHORITY")))
-            commands.append(["pkexec env DISPLAY=:0 XAUTHORITY=/root/.Xauthority"] + args)
+            print("Who am i?",os.getuid())
+            commands.append(["pkexec"]+["env"]+["DISPLAY="+os.environ.get("DISPLAY")]+["XAUTHORITY="+os.environ.get("XAUTHORITY")]+args)
             commands.append(["gksudo"] + args)
             commands.append(["kdesudo"] + args)
 

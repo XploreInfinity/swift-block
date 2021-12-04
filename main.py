@@ -1,10 +1,15 @@
 from PyQt6 import QtWidgets,uic
-import sys,get_hosts
+import sys,get_hosts,os
+import prompt_toolkit
+from elevate import elevate
+from RuleManager import RuleManager
 class Ui(QtWidgets.QWidget):
     def __init__(self):
+        #TODO: MAKE THIS LEGAL AGAIN: elevate()
         super().__init__()
         #*load the ui file
-        uic.loadUi('adblock.ui',self)
+        self.scriptPath=os.path.abspath(os.path.dirname(sys.argv[0]))
+        uic.loadUi(self.scriptPath+"/ui/adblock.ui",self)
         #*init the library for interacting with host sources,etc...
         #!WARNING:This changes the current directory
         self.parser=get_hosts.Parser()
@@ -14,12 +19,15 @@ class Ui(QtWidgets.QWidget):
         self.selectedSource=''#*Will store QListWidgetItem that is currently selected by the user
         self.customLst=''#*stores contents of user's custom list
         self.allowLst=''#*stores contents of user's allow list
+        self.sourceDct={}#*Stores source names and corresponding source URLs for display in the source edit form when user clicks on a source
         self.SignalSlotConfig()
+        
         self.show()
-
         self.reconf_ui()
 
     def reconf_ui(self):
+        #*Reconfig for the status tab:
+        self.loadStatus()
         #*Reconfig for the sources tab:
         self.loadSrcData()
         self.sourcesForm_widget.setDisabled(True)
@@ -40,7 +48,9 @@ class Ui(QtWidgets.QWidget):
         self.allowSave_btn.setDisabled(True)
         self.allowCancel_btn.setDisabled(True)
         self.allowStatus_lbl.hide()
+        
     #*Several utility functions that prevent code repetition:
+    #*Shows an error MessageBox which informs the user of the error(and provides additional info):
     def err_msg(self,err):
         msg=QtWidgets.QMessageBox()
         msg.setWindowTitle("Error")
@@ -50,6 +60,7 @@ class Ui(QtWidgets.QWidget):
         msg.setDetailedText(str(err))
         msg.exec()
 
+    #*Displays a success/error message on the label passed as an argument:
     def showStatus_lbl(self,message,lbl,success=False):
         if success:
             lbl.setStyleSheet("color:black;background-color:limegreen;font-weight:bold")
@@ -58,6 +69,14 @@ class Ui(QtWidgets.QWidget):
         lbl.setText(message)
         lbl.show()
 
+    #*load the status of the adblocker(whether online,no. of hosts blocked/redirected/allowed):
+    def loadStatus(self):
+        blocked,redirected,allowed=self.parser.getStatus()
+        if blocked !=None and redirected!=None and allowed !=None:
+            self.blockedCount_lbl.setText(str(blocked))
+            self.redirectedCount_lbl.setText(str(redirected))
+            self.allowedCount_lbl.setText(str(allowed))
+            
     #*fetches and shows user's host sources on the sourcesList:
     def loadSrcData(self):
         self.sourcesList.clear()
@@ -83,6 +102,8 @@ class Ui(QtWidgets.QWidget):
     
     #*A vital function that assigns all widgets handlers(slots) for specific events(signals):
     def SignalSlotConfig(self):
+        #*for events occurring in status tab:
+        self.manageRules_btn.clicked.connect(self.openRuleManager)
         #*for events occurring in sources tab:
         self.sourcesList.selectionModel().currentChanged.connect(self.sourceSelected)
         self.sourceAdd_btn.clicked.connect(self.addBtnClicked)
@@ -101,6 +122,10 @@ class Ui(QtWidgets.QWidget):
         
     
     #*SLOTS FOR EACH SIGNAL BELOW:
+    #*slots for status tab:
+    def openRuleManager(self):
+        self.rm=RuleManager(self.scriptPath)
+        self.hide()
     #*slots for the sources tab:
     def sourceSelected(self,current):
         #*Make sure the list isnt empty(which makes selected item None type)
@@ -160,11 +185,10 @@ class Ui(QtWidgets.QWidget):
         else:
             #*Save button disabled to prevent multiple save attempts at once
             self.sourceSave_btn.setDisabled(True)
-            
+            #*Check the mode[editMode when True is to edit an existing source and to add a new source when False]
             if self.editMode:
-                
                 try:
-                    self.parser.edit_source(self.selectedSource,srcName,srcURL)
+                    self.parser.edit_source(self.selectedSource,srcName,self.sourceDct[self.selectedSource],srcURL)
                     self.loadSrcData()
                     self.showStatus_lbl("Edited source successfully!",self.formStatus_lbl,True)
                 except Exception as err:

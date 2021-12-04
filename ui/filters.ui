@@ -1,0 +1,741 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>653</width>
+    <height>478</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>653</width>
+    <height>478</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>653</width>
+    <height>478</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="tabPosition">
+      <enum>QTabWidget::North</enum>
+     </property>
+     <property name="tabShape">
+      <enum>QTabWidget::Rounded</enum>
+     </property>
+     <property name="currentIndex">
+      <number>2</number>
+     </property>
+     <widget class="QWidget" name="SourceBlocked_tab">
+      <attribute name="title">
+       <string>Blocked by Source Files</string>
+      </attribute>
+      <widget class="QListWidget" name="sourceDefinedList">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>301</width>
+         <height>431</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="allowSourceBlocked_btn">
+       <property name="geometry">
+        <rect>
+         <x>340</x>
+         <y>40</y>
+         <width>101</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Unblock</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="redirectSourceBlocked_btn">
+       <property name="geometry">
+        <rect>
+         <x>500</x>
+         <y>40</y>
+         <width>101</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Redirect</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="sourceDefinedApplyConfig_btn">
+       <property name="geometry">
+        <rect>
+         <x>420</x>
+         <y>380</y>
+         <width>101</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Apply Now</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="sourceBlockedStatus_lbl">
+       <property name="geometry">
+        <rect>
+         <x>300</x>
+         <y>340</y>
+         <width>341</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>Configuration Changed!</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="mainSourceDefinedStatus_lbl">
+       <property name="geometry">
+        <rect>
+         <x>300</x>
+         <y>0</y>
+         <width>341</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>ERROR</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="UserBlocked_tab">
+      <attribute name="title">
+       <string>Blocked by You</string>
+      </attribute>
+      <widget class="QListWidget" name="blockedList">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>301</width>
+         <height>431</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="mainBlockedStatus_lbl">
+       <property name="geometry">
+        <rect>
+         <x>300</x>
+         <y>0</y>
+         <width>341</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>ERROR</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="addBlockedHost_btn">
+       <property name="geometry">
+        <rect>
+         <x>340</x>
+         <y>40</y>
+         <width>101</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Add</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="deleteBlockedHost_btn">
+       <property name="geometry">
+        <rect>
+         <x>500</x>
+         <y>40</y>
+         <width>101</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Delete</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="blockedStatus_lbl">
+       <property name="geometry">
+        <rect>
+         <x>300</x>
+         <y>340</y>
+         <width>341</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>Configuration Changed!</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="blockedApplyConfig_btn">
+       <property name="geometry">
+        <rect>
+         <x>420</x>
+         <y>380</y>
+         <width>101</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Apply Now</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="blockedHostname_lbl">
+       <property name="geometry">
+        <rect>
+         <x>320</x>
+         <y>110</y>
+         <width>71</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Hostname:</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="addBlockedHost_tf">
+       <property name="geometry">
+        <rect>
+         <x>320</x>
+         <y>130</y>
+         <width>301</width>
+         <height>26</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="addAddBlockedHost_btn">
+       <property name="geometry">
+        <rect>
+         <x>470</x>
+         <y>160</y>
+         <width>71</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Add</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cancelAddBlockedHost_btn">
+       <property name="geometry">
+        <rect>
+         <x>550</x>
+         <y>160</y>
+         <width>71</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Cancel</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="Redirected_tab">
+      <attribute name="title">
+       <string>Redirected</string>
+      </attribute>
+      <widget class="QTableWidget" name="redirectedTable">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>631</width>
+         <height>281</height>
+        </rect>
+       </property>
+       <property name="editTriggers">
+        <set>QAbstractItemView::NoEditTriggers</set>
+       </property>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::SingleSelection</enum>
+       </property>
+       <property name="selectionBehavior">
+        <enum>QAbstractItemView::SelectRows</enum>
+       </property>
+       <property name="cornerButtonEnabled">
+        <bool>true</bool>
+       </property>
+       <attribute name="horizontalHeaderDefaultSectionSize">
+        <number>308</number>
+       </attribute>
+       <attribute name="verticalHeaderHighlightSections">
+        <bool>true</bool>
+       </attribute>
+       <column>
+        <property name="text">
+         <string>IP (IPV4)</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Hostname</string>
+        </property>
+       </column>
+      </widget>
+      <widget class="QGroupBox" name="groupBox">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>310</y>
+         <width>521</width>
+         <height>111</height>
+        </rect>
+       </property>
+       <property name="accessibleName">
+        <string/>
+       </property>
+       <property name="title">
+        <string>Actions</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
+       </property>
+       <property name="checkable">
+        <bool>false</bool>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+       <widget class="QLineEdit" name="redirectedIP_tf">
+        <property name="geometry">
+         <rect>
+          <x>90</x>
+          <y>40</y>
+          <width>311</width>
+          <height>26</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="redirectedHostname_tf">
+        <property name="geometry">
+         <rect>
+          <x>90</x>
+          <y>70</y>
+          <width>311</width>
+          <height>26</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>40</y>
+          <width>57</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>IP(IPV4):</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_2">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>70</y>
+          <width>71</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Hostname:</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="saveRedirectedHost_btn">
+        <property name="geometry">
+         <rect>
+          <x>420</x>
+          <y>40</y>
+          <width>91</width>
+          <height>26</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Save</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="cancelRedirectedHost_btn">
+        <property name="geometry">
+         <rect>
+          <x>420</x>
+          <y>70</y>
+          <width>91</width>
+          <height>26</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Cancel</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="editMode_lbl">
+        <property name="geometry">
+         <rect>
+          <x>180</x>
+          <y>20</y>
+          <width>131</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color:limegreen;font-weight:bold;</string>
+        </property>
+        <property name="text">
+         <string>Editing a rule:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="widget" native="true">
+       <property name="geometry">
+        <rect>
+         <x>520</x>
+         <y>340</y>
+         <width>111</width>
+         <height>91</height>
+        </rect>
+       </property>
+       <widget class="QPushButton" name="addRedirectedHost_btn">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>91</width>
+          <height>26</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Add New Rule</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="deleteRedirectedHost_btn">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>40</y>
+          <width>91</width>
+          <height>26</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Remove Rule</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QLabel" name="redirectedStatus_lbl">
+       <property name="geometry">
+        <rect>
+         <x>370</x>
+         <y>280</y>
+         <width>161</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>Configuration Changed!</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="redirectedApplyConfig_btn">
+       <property name="geometry">
+        <rect>
+         <x>540</x>
+         <y>280</y>
+         <width>91</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Apply Now</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="mainRedirectedStatus_lbl">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>280</y>
+         <width>341</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>ERROR</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="UserAllowed_tab">
+      <attribute name="title">
+       <string>Allowed</string>
+      </attribute>
+      <widget class="QListWidget" name="allowedList">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>301</width>
+         <height>431</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="deleteAllowedHost_btn">
+       <property name="geometry">
+        <rect>
+         <x>500</x>
+         <y>40</y>
+         <width>101</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Delete</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="allowedStatus_lbl">
+       <property name="geometry">
+        <rect>
+         <x>300</x>
+         <y>340</y>
+         <width>341</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>Configuration Changed!</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="allowedApplyConfig_btn">
+       <property name="geometry">
+        <rect>
+         <x>420</x>
+         <y>380</y>
+         <width>101</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Apply Now</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="addAllowedHost_btn">
+       <property name="geometry">
+        <rect>
+         <x>340</x>
+         <y>40</y>
+         <width>101</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Add</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="allowedHostname_lbl">
+       <property name="geometry">
+        <rect>
+         <x>320</x>
+         <y>105</y>
+         <width>71</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Hostname:</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="addAllowedHost_tf">
+       <property name="geometry">
+        <rect>
+         <x>320</x>
+         <y>130</y>
+         <width>301</width>
+         <height>26</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="addAddAllowedHost_btn">
+       <property name="geometry">
+        <rect>
+         <x>470</x>
+         <y>160</y>
+         <width>71</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Add</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cancelAddAllowedHost_btn">
+       <property name="geometry">
+        <rect>
+         <x>550</x>
+         <y>160</y>
+         <width>71</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Cancel</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="mainAllowedStatus_lbl">
+       <property name="geometry">
+        <rect>
+         <x>300</x>
+         <y>0</y>
+         <width>341</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>ERROR</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
