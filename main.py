@@ -1,6 +1,5 @@
 from PyQt6 import QtWidgets,uic
-import sys,get_hosts,os
-import prompt_toolkit
+import sys,Parser,os
 from elevate import elevate
 from RuleManager import RuleManager
 class Ui(QtWidgets.QWidget):
@@ -12,7 +11,7 @@ class Ui(QtWidgets.QWidget):
         uic.loadUi(self.scriptPath+"/ui/adblock.ui",self)
         #*init the library for interacting with host sources,etc...
         #!WARNING:This changes the current directory
-        self.parser=get_hosts.Parser()
+        self.parser=Parser.Parser()
 
         #*GLOBAL VARIABLES DECLARATION:
         self.editMode=True #*controls whether the source editing form is set to edit source mode or add source mode

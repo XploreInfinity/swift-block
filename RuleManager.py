@@ -1,5 +1,5 @@
 from PyQt6 import QtWidgets,uic
-import sys,get_hosts
+import sys,Parser
 class RuleManager(QtWidgets.QWidget):
     def __init__(self,scriptPath):
         
@@ -8,17 +8,21 @@ class RuleManager(QtWidgets.QWidget):
         uic.loadUi(scriptPath+'/ui/filters.ui',self)
         self.setWindowTitle("Rule Manager- Swiftblock")
         #*GLOBAL VARIABLES DECLARATION:
-        self.scriptPath=scriptPath
+        self.scriptPath=scriptPath #*The path from which the app(or script) was executed
         self.SignalSlotConfig()
         self.sourceBlocked=[] #*Stores hostnames blocked by hosts file sources
         self.blocked=[] #*Stores hostnames blocked by user
         self.redirected=[] #*Stores rules that redirect a hostname
         self.allowed=[]  #*Stores hostnames allowed by user
-        self.editMode=True
+        self.editMode=True #*Flag to indicate whether the form in the user redirected tab is in editMode or addMode
+        self.redirectedIPv4=''#*Stores the initial IPv4 of the redirected rule that is currently being edited by the user
+        self.redirectedHostname=''#*Stores the initial hostname of the redirected rule that is currently being edited by the user
+        
+
 
         #*init the library for interacting with host sources,etc...
         #!WARNING:This changes the current directory
-        self.parser=get_hosts.Parser()
+        self.parser=Parser.Parser()
         self.loadHosts()
         self.show()
         self.reconf_ui()
@@ -192,6 +196,10 @@ class RuleManager(QtWidgets.QWidget):
 
     #*Adds the specified hostname and ip as a rule to the userlist(thus redirecting said hostname to said IP):
     def redirectHostname(self,hostname,ip):
+        #*If modifying an existing rule,remove the old version of the rule:
+        if self.editMode:
+            self.redirected.remove(self.redirectedIPv4+' '+self.redirectedHostname)
+        
         #*Rid the list of any rules that already contain the hostname we wish to redirect:
         for i in self.redirected:
             if i.split()[1]==hostname:
@@ -315,7 +323,9 @@ class RuleManager(QtWidgets.QWidget):
         #*Config for Redirected_tab:
         self.redirectedTable.selectionModel().currentChanged.connect(self.redirectedHostSelected)
         self.addRedirectedHost_btn.clicked.connect(self.addRedirectedHostClicked)
+        self.deleteRedirectedHost_btn.clicked.connect(self.deleteRedirectedHostClicked)
         self.saveRedirectedHost_btn.clicked.connect(self.saveRedirectedHostClicked)
+        self.cancelRedirectedHost_btn.clicked.connect(self.cancelRedirectedHostClicked)
 
         #*Config for userAllowed_tab:
         self.allowedList.selectionModel().currentChanged.connect(self.allowedHostSelected)
@@ -444,9 +454,18 @@ class RuleManager(QtWidgets.QWidget):
             #*Display the hostname and IP of the rule to edit in the form textfields:
             self.redirectedIP_tf.setText(self.redirectedTable.item(row_idx,0).text())
             self.redirectedHostname_tf.setText(self.redirectedTable.item(row_idx,1).text())
+            #*Also store the initial hostname and IP of the rule in global variables to help replace the intial version of the rule from the list after saving:
+            self.redirectedIPv4=self.redirectedTable.item(row_idx,0).text()
+            self.redirectedHostname=self.redirectedTable.item(row_idx,1).text()
+            #*Remove any old error/success messages:
+            self.mainRedirectedStatus_lbl.hide()
         else:
-            self.redirectedIP_tf.setText("")
-            self.redirectedHostname_tf.setText("")
+            #*If loadHosts() was called,no row is selected. So clear the form if it was in editMode:
+            if self.editMode:
+                #*Call slot of cancelRedirectedHost_btn to reset the form:
+                self.cancelRedirectedHostClicked()
+            #*Disable the deleteRedirectedHost_btn as no row is selected:
+            self.deleteRedirectedHost_btn.setDisabled(True)     
 
     #*Adds a user-defined hostname that redirects to a user-defined IP:    
     def addRedirectedHostClicked(self):
@@ -459,8 +478,18 @@ class RuleManager(QtWidgets.QWidget):
         self.redirectedIP_tf.setText("")
         self.redirectedHostname_tf.setText("")
         self.addRedirectedHost_btn.setDisabled(True)
-        
-    
+
+    #*Removes user selected rule from the redirected list:    
+    def deleteRedirectedHostClicked(self):
+        #*Display a prompt asking the user for confirmation:
+        question=QtWidgets.QMessageBox(QtWidgets.QMessageBox.Icon.Question,"Please Confirm","Are you sure remove this hostname from the allowed list?",(QtWidgets.QMessageBox.StandardButton.Yes|QtWidgets.QMessageBox.StandardButton.No))
+        confirm=question.exec()
+        if confirm==QtWidgets.QMessageBox.StandardButton.Yes:
+            #*Get the hostname and IP  from redirectedTable:
+            row_idx=self.redirectedTable.currentRow()
+            ip=self.redirectedTable.item(row_idx,0).text()
+            hostname=self.redirectedTable.item(row_idx,1).text()
+            self.deleteRedirectedHostname(hostname,ip)
 
     def saveRedirectedHostClicked(self):
         #*Get the hostname and IP  from the textfields:
@@ -473,18 +502,16 @@ class RuleManager(QtWidgets.QWidget):
                 if self.parser.is_valid_hostname(hostname):
                     if self.editMode:
                         print('editmode')
-                        '''
                         self.redirectHostname(hostname,ip)
                         #*To hide all the controls,call the Slot of Cancel button:
-                        self.cancelAddBlockedHostClicked()
+                        self.cancelRedirectedHostClicked()
                         #*Display success message to the user via status label:
                         self.showStatus_lbl("Edited the rule successfully!",self.mainRedirectedStatus_lbl,success=True)
-                        '''
                     else:
                         print('addMode')
                         self.redirectHostname(hostname,ip)
                         #*To hide all the controls,call the Slot of Cancel button:
-                        self.cancelAddBlockedHostClicked()
+                        self.cancelRedirectedHostClicked()
                         #*Re-enable the addRedirectedHost_btn:
                         self.addRedirectedHost_btn.setDisabled(False)
                         #*Display success message to the user via status label:
@@ -502,9 +529,14 @@ class RuleManager(QtWidgets.QWidget):
         self.redirectedHostname_tf.setText("")
         self.groupBox.setDisabled(True)
         self.editMode_lbl.hide()
+        #*Hide any previously generated error/success messages:
+        self.mainRedirectedStatus_lbl.hide()
         if not self.editMode:
             self.addRedirectedHost_btn.setDisabled(False)
             self.editMode=True
+
+
+
     #*Slots for UserAllowed tab:
     #*Enables the delete button when an item from allowedList is selected: 
     def allowedHostSelected(self):

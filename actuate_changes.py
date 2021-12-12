@@ -19,7 +19,7 @@ class actuate:
             sys.exit()
         print(file_path)
 
-        system_hosts=open('/home/xploreinfinity/noob.txt','r')
+        system_hosts=open('/home/mint/noob.txt','r')
         file_contents=[i.strip() for i in system_hosts.readlines()]
         system_hosts.close()
         foreign_contents=[] #*Temporarily stores other contents of the system hosts file,i.e,user added/default stuff(stuff outside our swiftblock ruleset)
@@ -36,7 +36,7 @@ class actuate:
         print(foreign_contents)
         
         #*Write the changes to the swiftblock ruleset, but first, write contents that were present in the file outside of the swiftblock ruleset:
-        system_hosts=open('/home/xploreinfinity/noob.txt','w')
+        system_hosts=open('/home/mint/noob.txt','w')
         for i in foreign_contents:
             system_hosts.write(i+'\n')
         #*If the purge flag is set to false,add the swiftblock ruleset,otherwise,do nothing:
@@ -52,6 +52,6 @@ class actuate:
 
 
 #!TESTING:
-f=open('/home/xploreinfinity/.adblock/hosts','r')
+f=open('/home/mint/.adblock/hosts','r')
 hosts=[i.strip() for i in f.readlines()]
 actuate().write_changes(hosts)
