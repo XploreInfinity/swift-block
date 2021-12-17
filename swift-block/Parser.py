@@ -1,23 +1,50 @@
-import os,requests,re,sqlite3,ipaddress
-from elevate import elevate
+import os,requests,re,sqlite3,ipaddress,sys
 class Parser:
     def __init__(self):
 
-        #*remove these records from the sources:
+        #*Global variable,stores records that need to be removed from the sources:
         self.obsolete=[r'^127\.0\.0\.1( +)localhost$',
         r'^127\.0\.0\.1( +)localhost\.localdomain$',
         r'^127\.0\.0\.1( +)local$',
         r'^255\.255\.255\.255( +)broadcasthost$',
         r'^0.0.0.0( +)0.0.0.0$']
+        #*Ensure the swiftblock user directory and its components are present,if not, regenerate:
         try:
-            os.chdir(os.path.expanduser("~/.adblock"))
+            os.chdir(os.path.expanduser("~/.swiftblock"))
+            if not os.path.exists("userlist"):
+                print('User-defined rule list file not found.Creating a new empty one.')
+                userlist=open('userlist','w')
+                userlist.close()
+            if not os.path.exists("allowlst"):
+                print('User-defined allow list file not found.Creating a new empty one.')
+                allowlst=open('allowlst','w')
+                allowlst.close()
+            #*initialise the database:
+            self.init_db()
+
         except FileNotFoundError:
-            print("Adblock directory not found.Creating it...")
-            os.mkdir(os.path.expanduser("~/.adblock"))
-            os.chdir(os.path.expanduser("~/.adblock"))
-        self.init_db()
+            print("This appears to be a first run. Welcome to Swiftblock!! :)")
+            print("Swiftblock directory not found.Creating it...")
+            os.mkdir(os.path.expanduser("~/.swiftblock"))
+            os.chdir(os.path.expanduser("~/.swiftblock"))
+
+            print('User-defined rule list file not found.Creating a new empty one.')
+            userlist=open('userlist','w')
+            userlist.close()
+
+            print('User-defined allow list file not found.Creating a new empty one.')
+            allowlst=open('allowlst','w')
+            allowlst.close()
+
+            #*initialise the database:
+            self.init_db()
+            
+            print('Generating the first hosts file:')
+            self.regen_hosts()
 
 
+
+    #*Initialises the DB and regenerates it,if DB file is found missing or corrupt:
     def init_db(self):
         try:
             self.conn=sqlite3.connect('sources.db')
@@ -31,6 +58,17 @@ class Parser:
             self.cursor.execute("INSERT INTO sources values('Pete','https://pgl.yoyo.org/adservers/serverlist.php?hostformat=hosts&showintro=0&mimetype=plaintext');")
             self.conn.commit()
 
+    #*Closes connection to the DB(required to remove DB lock which might occur while switching between different app windows):
+    def close_db(self):
+        try:
+            if self.cursor:
+                self.cursor.close()
+
+            if self.conn:
+                self.conn.close()
+        except:
+            print('close_db: Connection to the DB is already closed')
+
     #*Fetches all the details of source files from the sources table in the DB
     def fetch_sources(self):
         query="SELECT * FROM sources;"
@@ -38,7 +76,7 @@ class Parser:
         return result.fetchall()
     
     #*This generates a basic hosts file consisting of rules compiled from various sources present in the DB
-    def generateSourceRules(self):
+    def generateSourceRules(self,updateSources=False):
         #*Clear the sourceslist file to remove old rules:
         sources_file=open('sourceslist','w')
         sources_file.close()
@@ -47,7 +85,15 @@ class Parser:
         #*One by one, merge each source into the sourceslist file:
         for i in sources_lst:
                 name=i[0]
-                source_file=open(name+".txt",'r')
+                url=i[1]
+                source_file=None
+                #*If we simply regenerating sources without updating the source file and if the file exists on the disk,use it:
+                if os.path.exists(name+".txt") and not updateSources:
+                    source_file=open(name+".txt",'r')
+                #*Else if the source file was deleted,or we are updating the source files by fetching a fresh version,re-download it:
+                else:
+                    self.download_source(name, url)
+                    source_file=open(name+".txt",'r')
                 #*We're using readlines() because its generally recommended and we wont have blank '' that are returned by read() when it reaches EOF
                 file_lst=set([i.strip() for i in source_file.readlines()])
                 main_sources=open('sourceslist','r')                
@@ -125,23 +171,14 @@ class Parser:
         for i in final_lst:
             main_hosts.write(i+'\n')
         main_hosts.close()
-        '''
-        #*finally,also include user's custom hosts list:
-        self.download_source("custom","customlst",True)
-        #*Remove entries within the main host files that are mentioned in allow list:
-        #*TODO:CLEAN UP THIS MESS
-        source_file=open('hosts','r')
-        file_contents={i.strip() for i in source_file.readlines()}
-        source_file.close()
-        #allowlst_contents=self.customlst("allowlst")
-        #diff=file_contents-allowlst_contents
-        #print(diff)
-        source_file=open('hosts','w')
-        source_file.write('\n'.join(list(file_contents)))
-        '''
+
+        blockerStatus=self.getStatus()[3]
+        #*Write these changes to the system hosts file[only if swiftblock is active]:
+        if blockerStatus:
+            self.write_changes()
+        
     #*Downloads hosts files from remote sources(can also get files from filesystem-but this feature is currently unused):
     def download_source(self,name,url,offline=False):
-
         #*get the url corresponding to the source name:
         match=r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}( +)(.[^ ]*)$"
 
@@ -163,8 +200,6 @@ class Parser:
                     clean=True
                     for dup in self.obsolete:
                         if re.search(dup,i):
-                            #TODO:REMOVE THIS DEBUG OUTPUT LATER
-                            print('Rid it:',i,' Identifying with:',dup)
                             clean=False
                             break
                     if clean:
@@ -175,18 +210,11 @@ class Parser:
                             replace_pattern=r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"
                             i=re.sub(replace_pattern,"127.0.0.1",i)
                         hosts.append(i)
-                        '''
-                        STANDBY FOR MORE INTEL<waiting on adaway issue,weebs havent responded yet>
-                        #*remove www. prefixes from all hostnames and Ensure all hostnames are valid:
+                        #*Ensure the hostname is valid:
                         hostname=i.split()[1]
-                        hostname=re.sub(r'^www\.',"",hostname)
-
                         if self.is_valid_hostname(hostname):
                             #*if the hostname is valid, add its rule to the hosts list:
                             i=i.split()[0]+' '+hostname
-                            
-                        else:
-                            print(hostname)'''  
         hosts.sort()
         host_file=None
         if offline:
@@ -197,68 +225,6 @@ class Parser:
         for line in hosts:
             host_file.write(line+'\n')#*line breaks were removed earlier,add them again between each line.
         host_file.close()
-
-    def dontlookatme(self,name,url,offline=False):
-
-        #*get the url corresponding to the source name:
-        match=r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}( +)(.[^ ]*)$"
-
-        file_contents=[]
-        if offline:
-            #*the file is on disk.The url param acts as a file path:
-            source_file=open(url,'r')
-            file_contents=[i.strip() for i in source_file.readlines()]
-            source_file.close()
-        else:
-            response=requests.get(url,allow_redirects=True)
-            file_contents=response.text.split('\n')
-        #*split the recieved text into a list separated by \n
-        hosts=[]
-        for i in file_contents:
-            #*Ensure that the line is not empty/badly formatted and is not a comment.
-            if re.search(match,i.strip()):
-                    #*remove generic entries that identify with the local machine or network:
-                    clean=True
-                    for dup in self.obsolete:
-                        if re.search(dup,i):
-                            #TODO:REMOVE THIS DEBUG OUTPUT LATER
-                            print('Rid it:',i,' Identifying with:',dup)
-                            clean=False
-                            break
-                    if clean:
-                        #*Replace 0.0.0.0(or any other source specified ip) with 127.0.0.1 for safety reasons.
-                        #!Do this only for remote sources.User's custom list isn't affected.
-                        if offline:
-                            hosts.append(i)
-                        else:
-                            replace_pattern=r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"
-                            hosts.append(re.sub(replace_pattern,"127.0.0.1",i))
-
-        hosts.sort()
-        host_file=None
-        if offline:
-            host_file=open(url,'w')
-        else:
-            host_file=open(name+'.txt','w')
-        #*write the newly fetched remote hosts to file;offline files need to be rewritten with the cleaned hosts entries as well:
-        for line in hosts:
-            host_file.write(line+'\n')#*line breaks were removed earlier,add them again between each line.
-        host_file.close()
-
-        #*Merge the new file with the main hosts file
-        file_lst=set(hosts)
-        main_hosts=open('hosts','r')
-        #*We're using readlines() because its generally recommended and we wont have blank '' that are returned by read() when it reaches EOF
-        main_lst=set([i.strip() for i in main_hosts.readlines()])
-        #*Find hosts that arent in the main_hosts file
-        diff=file_lst-main_lst
-        main_lst.update(diff)
-        main_lst=list(main_lst)
-        main_lst.sort()
-        #*Finally write the merged list to the main hosts file:
-        main_hosts=open('hosts','w')
-        for i in main_lst:
-            main_hosts.write(i+'\n')
 
     def add_source(self,name,url):
         query="INSERT INTO sources VALUES('"+name+"','"+url+"')"
@@ -288,49 +254,16 @@ class Parser:
             self.download_source(newname,newurl)
             self.regen_hosts()
 
+    #*Deletes a source from the sources.db and removes its contents from the hosts file:
     def del_source(self,name):
         query="DELETE FROM sources WHERE name='"+name+"'"
-
         self.cursor.execute(query)
         self.conn.commit()
         #*Since we deleted the source from the db,remove the file as well:
         if os.path.exists(name+'.txt'):
             os.remove(name+'.txt')
-        #*regenerate the main hosry)
-        self.conn.commit()
-        #*download the new source and merge with the main hosts file:
-        self.download_source(name,url)
-
-        sources_file=open('sources','r')
-        temp_lst=sources_file.read().split("\n")
-        temp_lst.remove('')
-        sources_lst=[]
-        for i in temp_lst:
-            sources_lst.append(i.split(","))
-        return sources_lst
-      
-    #*this function writes reads user's custom allow/deny list
-    def customlst(self,url,hosts=None):
-        #!The check is done because python thinks ""==None :(
-        if hosts!=None:
-            source_file=open(url,'w')
-            source_file.write(hosts)
-            source_file.close()
-            #*Update the main hosts file since the custom list changed:
-            self.regen_hosts()
-        else:
-            try:
-                source_file=open(url,'r')
-                file_contents=[i.strip() for i in source_file.readlines()]
-                source_file.close()
-                customLst='\n'.join(file_contents)
-                return customLst
-            except FileNotFoundError:
-                #*The customlst file doesnt exist so recreate it:
-                source_file=open(url,'w')
-                source_file.close()
-                print("Custom-list file is non-existent or corrupted. Recreating...")
-                return 
+        #*regenerate the main hosts:
+        self.regen_hosts()
 
     #*Retrieves hosts to display in RuleManager:
     def getHosts(self):
@@ -363,7 +296,7 @@ class Parser:
             return False
         if hostname[-1] == ".":
             hostname = hostname[:-1] #*strip exactly one dot from the right, if present
-        allowed = re.compile(r"(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
+        allowed = re.compile(r"^(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
         return all(allowed.match(x) for x in hostname.split("."))
     
     #*Checks if given IPv4 is valid:
@@ -373,8 +306,29 @@ class Parser:
                 return True
         except ValueError:
                return False
+
     #*Returns the status of the adblocker(whether active,no. of hosts blocked/redirected/allowed):
     def getStatus(self):
+        #*Check whether swiftblock is active(i.e whether swiftblock's rules are loaded in the system hosts file):
+        file_path=''#*Stores the path to the hosts file[this is platform-dependent]
+        #*Determine what platform the app is running on:
+        if sys.platform.startswith('linux') or sys.platform.startswith('darwin') or sys.platform.startswith('freebsd'):
+            file_path='/etc/hosts'
+        elif sys.platform.startswith('win32'):
+            file_path='C:\Windows\System32\drivers\etc\hosts'#TODO:CHECK VALIDITY[\ characters might cause problems]
+        else:
+            print('Unsupported platform!!')
+            sys.exit()
+        #*Open the system hosts file to check for swiftblock rules
+        system_hosts=open(file_path,'r')
+        file_contents=[i.strip() for i in system_hosts.readlines()]
+        inRuleSet=False#*A flag which tracks the section of the list we are currently within(i.e whether outside swiftblock ruleset or inside it)
+        foundRuleSet=False
+        for i in file_contents:
+            if i=="# SWIFTBLOCK RULESET BEGINS":
+                foundRuleSet=True
+                
+        #*Get the statistics(no. of hosts blocked/redirected/allowed) from hosts file in swiftblock's user directory
         if os.path.exists('hosts'):
             main_hosts=open('hosts','r')
             main_lst=[i.strip() for i in main_hosts.readlines()]
@@ -389,23 +343,51 @@ class Parser:
                 allowed_list=[i.strip() for i in allowed_file.readlines()]
                 for i in allowed_list:
                     allowed.append(i)
-            return len(blocked),len(redirected),len(allowed)
-            #*TODO: check whether blocker is active
-        
+            return len(blocked),len(redirected),len(allowed),foundRuleSet
         else:
-            return None,None,None
-            
-'''
-h=Parser()
-h.download_source('Adaway','https://adaway.org/hosts.txt')
-h.download_source('Pete','https://pgl.yoyo.org/adservers/serverlist.php?hostformat=hosts&showintro=0&mimetype=plaintext')
-'''
-'''
-h=Parser()
-if h.del_source('petelowe'):print('Yes it worked')
-if h.add_source('adaway','https://adaway.org/hosts.txt') :print('Added adaway')
-if h.add_source('steven','https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts'): print('Added steven')
-if h.add_source('pete','https://pgl.yoyo.org/adservers/serverlist.php?hostformat=hosts&showintro=0&mimetype=plaintext'): print('Added Pete')
-print(h.fetch_sources())
+            return None,None,None,foundRuleSet
+    
+    #*Writes new changes to the the system hosts file[the purge flag,when True will erase existing swiftblock ruleset and replace it with nothing]:
+    def write_changes(self,purge=False):
+        file_path=''#*Stores the path to the hosts file[this is platform-dependent]
+        #*Determine what platform the app is running on:
+        if sys.platform.startswith('linux') or sys.platform.startswith('darwin') or sys.platform.startswith('freebsd'):
+            file_path='/etc/hosts'
+        elif sys.platform.startswith('win32'):
+            file_path='C:\Windows\System32\drivers\etc\hosts'#TODO:CHECK VALIDITY[\ characters might cause problems]
+        else:
+            print('Unsupported platform!!')
+            sys.exit()
 
-'''
+        system_hosts=open(file_path,'r')
+        file_contents=[i.strip() for i in system_hosts.readlines()]
+        system_hosts.close()
+        foreign_contents=[] #*Temporarily stores other contents of the system hosts file,i.e,user added/default stuff(stuff outside our swiftblock ruleset)
+        withinRuleset=False #*A flag which tracks the section of the list we are currently within(i.e whether outside swiftblock ruleset or inside it)
+        #*Create a list of the lines outside the swiftblock ruleset:
+        for i in file_contents:
+            if i!="# SWIFTBLOCK RULESET BEGINS" and withinRuleset==False:
+                foreign_contents.append(i)
+            else:
+                if i=="# SWIFTBLOCK RULESET ENDS":
+                    withinRuleset=False
+                else:
+                    withinRuleset=True
+        
+        #*Write the changes to the swiftblock ruleset, but first, write contents that were present in the file outside of the swiftblock ruleset:
+        system_hosts=open(file_path,'w')
+        for i in foreign_contents:
+            system_hosts.write(i+'\n')
+        #*If the purge flag is set to false,add the swiftblock ruleset,otherwise,do nothing:
+        if not purge:
+            #*Get the rules from the hosts file in swiftblock user directory:
+            main_hosts=open('hosts','r')
+            hosts=[i.strip() for i in main_hosts.readlines()]
+            #*Write the line that marks the beginning of the swiftblock-ruleset:
+            system_hosts.write("# SWIFTBLOCK RULESET BEGINS"+'\n')
+            #*Write all the rules:
+            for i in hosts:
+                system_hosts.write(i+'\n')
+            #*Write the line that marks the ending of the swiftblock-ruleset:
+            system_hosts.write("# SWIFTBLOCK RULESET ENDS"+'\n')
+        system_hosts.close()

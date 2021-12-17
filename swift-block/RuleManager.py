@@ -1,8 +1,7 @@
-from PyQt6 import QtWidgets,uic
-import sys,Parser
+from PyQt6 import QtWidgets,QtGui,QtCore,uic
+import os,sys,Parser
 class RuleManager(QtWidgets.QWidget):
     def __init__(self,scriptPath):
-        
         super().__init__()
         #*load the ui file
         uic.loadUi(scriptPath+'/ui/filters.ui',self)
@@ -14,6 +13,7 @@ class RuleManager(QtWidgets.QWidget):
         self.blocked=[] #*Stores hostnames blocked by user
         self.redirected=[] #*Stores rules that redirect a hostname
         self.allowed=[]  #*Stores hostnames allowed by user
+        self.sourceRedirectedFormEnabled=False#*Flag to indicate whether the form in the source defined tab is enabled
         self.editMode=True #*Flag to indicate whether the form in the user redirected tab is in editMode or addMode
         self.redirectedIPv4=''#*Stores the initial IPv4 of the redirected rule that is currently being edited by the user
         self.redirectedHostname=''#*Stores the initial hostname of the redirected rule that is currently being edited by the user
@@ -28,6 +28,20 @@ class RuleManager(QtWidgets.QWidget):
         self.reconf_ui()
 
     def reconf_ui(self):
+        #*Apply icons to the home button on each tab:
+        #*For sourceDefine_tab:
+        self.sourceBlockedHome_btn.setIcon(QtGui.QIcon(self.scriptPath+"/assets/home.svg"))
+        self.sourceBlockedHome_btn.setIconSize(QtCore.QSize(30,20))
+        #*For userBlocked_tab:
+        self.blockedHome_btn.setIcon(QtGui.QIcon(self.scriptPath+"/assets/home.svg"))
+        self.blockedHome_btn.setIconSize(QtCore.QSize(30,20))
+        #*For Redirected_tab:
+        self.redirectedHome_btn.setIcon(QtGui.QIcon(self.scriptPath+"/assets/home.svg"))
+        self.redirectedHome_btn.setIconSize(QtCore.QSize(30,20))
+        #*For userAllowed tab:
+        self.allowedHome_btn.setIcon(QtGui.QIcon(self.scriptPath+"/assets/home.svg"))
+        self.allowedHome_btn.setIconSize(QtCore.QSize(30,20))
+
         #*Hide all the status labels and ApplyConfig buttons:
         #*For sourceDefined_tab:
         self.sourceBlockedStatus_lbl.hide()
@@ -46,7 +60,10 @@ class RuleManager(QtWidgets.QWidget):
         self.allowSourceBlocked_btn.setDisabled(True)
         self.redirectSourceBlocked_btn.setDisabled(True)
         self.mainSourceDefinedStatus_lbl.hide()
-        #TODO:ADD CODE FOR DISABLING OTHER ELEMENTS
+        self.sourceBlockedHostname_lbl.hide()
+        self.redirectSourceBlockedHost_tf.hide()
+        self.redirectSourceBlockedHost_btn.hide()
+        self.cancelRedirectSourceBlockedHost_btn.hide()
 
         #*Disable or hide a few elements of the userBlocked tab:
         self.deleteBlockedHost_btn.setDisabled(True)
@@ -73,7 +90,7 @@ class RuleManager(QtWidgets.QWidget):
         self.cancelAddAllowedHost_btn.hide()
         self.mainAllowedStatus_lbl.hide()
 
-        
+    #*Several Utility functions:
     #*loads redirected host rules into redirectedTable
     def loadHosts(self):
         #*Fetch updates values from the Parser's getHosts() and update all the lists:
@@ -95,8 +112,18 @@ class RuleManager(QtWidgets.QWidget):
             ip,hostname=self.redirected[i].split()
             self.redirectedTable.setItem(i,0,QtWidgets.QTableWidgetItem(ip))
             self.redirectedTable.setItem(i,1,QtWidgets.QTableWidgetItem(hostname))
+        '''If any are enabled,disable delete buttons of allowed and user blocked tabs, disable unblock and redirect buttons and hide the form of
+        source blocked tab(because lists lose their selection on reloading data,and working with any of these components when nothing is
+         selected will result in a crash):'''
+        #*for source blocked tab:
+        self.cancelRedirectSourceBlockedHostClicked()
+        self.allowSourceBlocked_btn.setDisabled(True)
+        self.redirectSourceBlocked_btn.setDisabled(True)
+        #*For user blocked tab:
+        self.deleteBlockedHost_btn.setDisabled(True)
+        #*for allowed tab:
+        self.deleteAllowedHost_btn.setDisabled(True)
     
-    #*Several Utility functions:
     #*Displayes/Hides status labels informing the users of config changes:
     def showConfigChanged(self,showMessage=True):
         if showMessage:
@@ -302,6 +329,17 @@ class RuleManager(QtWidgets.QWidget):
             msg.setText("Oops! An error occurred. Additional info is provided below")
             msg.setDetailedText(str(err))
             msg.exec()
+    
+
+    #*Opens the home(main) window:
+    def openHome(self):
+        #*Change dir to the script path temporarily for the Ui class to load its ui file(it will automatically chdir back to the swiftblock directory):
+        os.chdir(self.scriptPath)
+        self.hide()
+        self.parser.close_db()
+        from main import Ui
+        self.home=Ui()
+        
 
     #*Maps each Signal to its Slot function:
     def SignalSlotConfig(self):
@@ -309,8 +347,17 @@ class RuleManager(QtWidgets.QWidget):
         self.blockedApplyConfig_btn.clicked.connect(self.applyConfig)
         self.redirectedApplyConfig_btn.clicked.connect(self.applyConfig)
         self.allowedApplyConfig_btn.clicked.connect(self.applyConfig)
+
+        self.sourceBlockedHome_btn.clicked.connect(self.openHome)
+        self.blockedHome_btn.clicked.connect(self.openHome)
+        self.redirectedHome_btn.clicked.connect(self.openHome)
+        self.allowedHome_btn.clicked.connect(self.openHome)
+
         #*Config for sourceDefined_tab:
         self.allowSourceBlocked_btn.clicked.connect(self.allowSourceBlockedRule)
+        self.redirectSourceBlocked_btn.clicked.connect(self.redirectSourceBlockedClicked)
+        self.redirectSourceBlockedHost_btn.clicked.connect(self.redirectSourceBlockedHostClicked)
+        self.cancelRedirectSourceBlockedHost_btn.clicked.connect(self.cancelRedirectSourceBlockedHostClicked)
         self.sourceDefinedList.selectionModel().currentChanged.connect(self.sourceDefinedHostSelected)
 
         #*Config for userBlocked_tab:
@@ -339,8 +386,64 @@ class RuleManager(QtWidgets.QWidget):
     #*Enables the allow and redirect buttons when an item from sourceDefinedList is selected: 
     def sourceDefinedHostSelected(self):
         self.allowSourceBlocked_btn.setDisabled(False)
+        #*Only enable the redirect button if the form isnt enabled yet:(Otherwise it gets enabled every time user selects another item from the list)
+        if not self.sourceRedirectedFormEnabled:
+            self.redirectSourceBlocked_btn.setDisabled(False)
+    
+    #*Shows the form that allows user-selected source-blocked hostname to be redirected to a user defined IP:
+    def redirectSourceBlockedClicked(self):
+        #*Show the components of the form:
+        self.sourceBlockedHostname_lbl.show()
+        self.redirectSourceBlockedHost_btn.show()
+        self.cancelRedirectSourceBlockedHost_btn.show()
+        self.redirectSourceBlockedHost_tf.show()
+        #*Set the flag which indicates whether form is enabled to True:
+        self.sourceRedirectedFormEnabled=True
+        #*Hide the main status label to clear any previous messages:
+        self.mainSourceDefinedStatus_lbl.hide()
+        #*And disable this button.It will be re-enabled if the user decides to cancel the process:
+        self.redirectSourceBlocked_btn.setDisabled(True)
+
+    #*Redirects user-selected hostname to a user-defined IP:
+    def redirectSourceBlockedHostClicked(self):
+        #*Get the IPv4 from the textfield:
+        IPv4=self.redirectSourceBlockedHost_tf.text()
+        #*Ensure the tf isn't empty and the IPv4 entered is valid:
+        if IPv4!="" and self.parser.is_valid_ipv4(IPv4):
+            #*Get the hostname selected by the user from the sourceBlocked list:
+            hostname=self.sourceDefinedList.currentItem().text()
+            #*Set the mode of the redirect-tab form to read mode temporarily(because we're adding this rule):
+            mode=self.editMode
+            self.editMode=False
+            #*Add the user-selected hostname and IPv4 as a rule to the redirected list:
+            self.redirectHostname(hostname,IPv4)
+            #*Now,restore the mode to its original value:
+            self.editMode=mode
+            #*To hide all the controls,call the Slot of Cancel button:
+            self.cancelRedirectSourceBlockedHostClicked()
+            #*Also disable the redirect and unblock buttons(because nothing is selected currently):
+            self.allowSourceBlocked_btn.setDisabled(True)
+            self.redirectSourceBlocked_btn.setDisabled(True)
+            #*Display success message to the user via status label:
+            self.showStatus_lbl("Redirected the hostname successfully!",self.mainSourceDefinedStatus_lbl,success=True)
+        else:
+            self.showStatus_lbl("Please enter a valid IPv4!",self.mainSourceDefinedStatus_lbl)
+    
+    #*Hides the form that allows user to redirect selected hostname and does other cleanup:
+    def cancelRedirectSourceBlockedHostClicked(self):
+        #*Set the flag which indicates whether form is enabled to False:
+        self.sourceRedirectedFormEnabled=False
+        #*Clear any generated status messages:
+        self.mainAllowedStatus_lbl.hide()
+        #*Hide the form components:
+        self.sourceBlockedHostname_lbl.hide()
+        self.redirectSourceBlockedHost_btn.hide()
+        self.cancelRedirectSourceBlockedHost_btn.hide()
+        self.redirectSourceBlockedHost_tf.hide()
+        #*Also clear the text of the textfield:
+        self.redirectSourceBlockedHost_tf.setText("")
+        #*Re-enable the main redirectSourceBlocked_btn:
         self.redirectSourceBlocked_btn.setDisabled(False)
-        
 
     #*Adds the hostname to the allowed list(effectively unblocking it)
     def allowSourceBlockedRule(self):
@@ -501,14 +604,12 @@ class RuleManager(QtWidgets.QWidget):
             if self.parser.is_valid_ipv4(ip):
                 if self.parser.is_valid_hostname(hostname):
                     if self.editMode:
-                        print('editmode')
                         self.redirectHostname(hostname,ip)
                         #*To hide all the controls,call the Slot of Cancel button:
                         self.cancelRedirectedHostClicked()
                         #*Display success message to the user via status label:
                         self.showStatus_lbl("Edited the rule successfully!",self.mainRedirectedStatus_lbl,success=True)
                     else:
-                        print('addMode')
                         self.redirectHostname(hostname,ip)
                         #*To hide all the controls,call the Slot of Cancel button:
                         self.cancelRedirectedHostClicked()
@@ -578,8 +679,8 @@ class RuleManager(QtWidgets.QWidget):
     def addAddAllowedHostClicked(self):
         #*Get the selected hostname from the hostname textfield:
         hostname=self.addAllowedHost_tf.text()
-        #*Ensure the tf isn't empty:
-        if hostname!="":
+        #*Ensure the tf isn't empty and the hostname entered is valid:
+        if hostname!="" and self.parser.is_valid_hostname(hostname):
             #*Add the hostname to the allowed list:
             self.allowHostname(hostname)
             #*To hide all the controls,call the Slot of Cancel button:

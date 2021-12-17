@@ -8,5 +8,3 @@ root/admin privileges using one of the following mechanisms:
 - AppleScript (macOS)
 - ``pkexec``, ``gksudo`` or ``kdesudo`` (Linux)
 - ``sudo`` (Linux, macOS)
-
-Added to this project for privilege elevation until I come up with a custom solution

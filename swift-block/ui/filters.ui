@@ -44,7 +44,7 @@
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="SourceBlocked_tab">
       <attribute name="title">
@@ -99,6 +99,81 @@
         <string>Apply Now</string>
        </property>
       </widget>
+      <widget class="QLabel" name="mainSourceDefinedStatus_lbl">
+       <property name="geometry">
+        <rect>
+         <x>300</x>
+         <y>0</y>
+         <width>341</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>ERROR</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="sourceBlockedHostname_lbl">
+       <property name="geometry">
+        <rect>
+         <x>320</x>
+         <y>110</y>
+         <width>121</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>IPv4 to redirect to:</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="redirectSourceBlockedHost_tf">
+       <property name="geometry">
+        <rect>
+         <x>320</x>
+         <y>130</y>
+         <width>301</width>
+         <height>26</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="redirectSourceBlockedHost_btn">
+       <property name="geometry">
+        <rect>
+         <x>470</x>
+         <y>160</y>
+         <width>71</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Redirect</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cancelRedirectSourceBlockedHost_btn">
+       <property name="geometry">
+        <rect>
+         <x>550</x>
+         <y>160</y>
+         <width>71</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Cancel</string>
+       </property>
+      </widget>
       <widget class="QLabel" name="sourceBlockedStatus_lbl">
        <property name="geometry">
         <rect>
@@ -125,30 +200,23 @@
         <set>Qt::AlignCenter</set>
        </property>
       </widget>
-      <widget class="QLabel" name="mainSourceDefinedStatus_lbl">
+      <widget class="QPushButton" name="sourceBlockedHome_btn">
        <property name="geometry">
         <rect>
-         <x>300</x>
-         <y>0</y>
-         <width>341</width>
-         <height>30</height>
+         <x>559</x>
+         <y>400</y>
+         <width>71</width>
+         <height>28</height>
         </rect>
        </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true"/>
-       </property>
        <property name="text">
-        <string>ERROR</string>
+        <string>Home</string>
        </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
+       <property name="iconSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
        </property>
       </widget>
      </widget>
@@ -306,6 +374,25 @@
         <string>Cancel</string>
        </property>
       </widget>
+      <widget class="QPushButton" name="blockedHome_btn">
+       <property name="geometry">
+        <rect>
+         <x>560</x>
+         <y>400</y>
+         <width>71</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Home</string>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+      </widget>
      </widget>
      <widget class="QWidget" name="Redirected_tab">
       <attribute name="title">
@@ -451,9 +538,9 @@
        <widget class="QLabel" name="editMode_lbl">
         <property name="geometry">
          <rect>
-          <x>180</x>
+          <x>160</x>
           <y>20</y>
-          <width>131</width>
+          <width>171</width>
           <height>16</height>
          </rect>
         </property>
@@ -479,9 +566,9 @@
        <property name="geometry">
         <rect>
          <x>520</x>
-         <y>340</y>
+         <y>330</y>
          <width>111</width>
-         <height>91</height>
+         <height>71</height>
         </rect>
        </property>
        <widget class="QPushButton" name="addRedirectedHost_btn">
@@ -514,9 +601,9 @@
       <widget class="QLabel" name="redirectedStatus_lbl">
        <property name="geometry">
         <rect>
-         <x>370</x>
+         <x>350</x>
          <y>280</y>
-         <width>161</width>
+         <width>191</width>
          <height>31</height>
         </rect>
        </property>
@@ -574,6 +661,25 @@
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="redirectedHome_btn">
+       <property name="geometry">
+        <rect>
+         <x>560</x>
+         <y>400</y>
+         <width>71</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Home</string>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
        </property>
       </widget>
      </widget>
@@ -660,9 +766,9 @@
        <property name="geometry">
         <rect>
          <x>320</x>
-         <y>105</y>
+         <y>110</y>
          <width>71</width>
-         <height>21</height>
+         <height>16</height>
         </rect>
        </property>
        <property name="text">
@@ -729,6 +835,25 @@
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="allowedHome_btn">
+       <property name="geometry">
+        <rect>
+         <x>560</x>
+         <y>400</y>
+         <width>71</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Home</string>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
        </property>
       </widget>
      </widget>

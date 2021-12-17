@@ -1,10 +1,10 @@
-from PyQt6 import QtWidgets,uic
-import sys,Parser,os
+from PyQt6 import QtWidgets,QtCore,QtGui,uic
+import sys,Parser,os,webbrowser
 from elevate import elevate
 from RuleManager import RuleManager
 class Ui(QtWidgets.QWidget):
     def __init__(self):
-        #TODO: MAKE THIS LEGAL AGAIN: elevate()
+        elevate()
         super().__init__()
         #*load the ui file
         self.scriptPath=os.path.abspath(os.path.dirname(sys.argv[0]))
@@ -14,19 +14,23 @@ class Ui(QtWidgets.QWidget):
         self.parser=Parser.Parser()
 
         #*GLOBAL VARIABLES DECLARATION:
+        self.status=False  #*Flag which indicates whether swiftblock is enabled or disabled
         self.editMode=True #*controls whether the source editing form is set to edit source mode or add source mode
         self.selectedSource=''#*Will store QListWidgetItem that is currently selected by the user
-        self.customLst=''#*stores contents of user's custom list
-        self.allowLst=''#*stores contents of user's allow list
         self.sourceDct={}#*Stores source names and corresponding source URLs for display in the source edit form when user clicks on a source
-        self.SignalSlotConfig()
         
+        self.SignalSlotConfig()
         self.show()
         self.reconf_ui()
 
     def reconf_ui(self):
+        self.setWindowIcon(QtGui.QIcon(self.scriptPath+"/assets/app_icon.svg"))
         #*Reconfig for the status tab:
         self.loadStatus()
+        self.manageRules_btn.setIcon(QtGui.QIcon(self.scriptPath+"/assets/ruleMan.svg"))
+        self.manageRules_btn.setIconSize(QtCore.QSize(30,30))
+        self.updateSources_btn.setIcon(QtGui.QIcon(self.scriptPath+"/assets/sources_update.png"))
+        self.updateSources_btn.setIconSize(QtCore.QSize(35,35))
         #*Reconfig for the sources tab:
         self.loadSrcData()
         self.sourcesForm_widget.setDisabled(True)
@@ -35,18 +39,10 @@ class Ui(QtWidgets.QWidget):
         self.formStatus_lbl.hide()
         self.sourceName_tf.setPlaceholderText("Unqiue nickname for the source")
         self.sourceURL_tf.setPlaceholderText("Unique URL of the source")
-
-        #*Reconfig for the custom list tab:
-        self.loadCustomLst()
-        self.customSave_btn.setDisabled(True)
-        self.customCancel_btn.setDisabled(True)
-        self.customStatus_lbl.hide()
-
-        #*Reconfig for the allow list tab:
-        self.loadAllowLst()
-        self.allowSave_btn.setDisabled(True)
-        self.allowCancel_btn.setDisabled(True)
-        self.allowStatus_lbl.hide()
+        #*Reconfig for the about tab:
+        self.gitRepo_btn.setIcon(QtGui.QIcon(self.scriptPath+'/assets/github.svg'))
+        self.gitRepo_btn.setIconSize(QtCore.QSize(35,50))
+        self.appIcon_lbl.setStyleSheet('border-image:url("'+self.scriptPath+'/assets/app_icon.svg");')
         
     #*Several utility functions that prevent code repetition:
     #*Shows an error MessageBox which informs the user of the error(and provides additional info):
@@ -68,13 +64,25 @@ class Ui(QtWidgets.QWidget):
         lbl.setText(message)
         lbl.show()
 
-    #*load the status of the adblocker(whether online,no. of hosts blocked/redirected/allowed):
+    #*load the status of the adblocker(whether active,no. of hosts blocked/redirected/allowed):
     def loadStatus(self):
-        blocked,redirected,allowed=self.parser.getStatus()
+        blocked,redirected,allowed,self.status=self.parser.getStatus()
         if blocked !=None and redirected!=None and allowed !=None:
             self.blockedCount_lbl.setText(str(blocked))
             self.redirectedCount_lbl.setText(str(redirected))
             self.allowedCount_lbl.setText(str(allowed))
+        #*Based on swiftblock's status,change the gui accordingly:
+        if self.status:
+            self.status_lbl.setText("SwiftBlock is enabled")
+            self.toggleStatus_btn.setText("Disable")
+            self.background_lbl.setStyleSheet("background-image:url('"+self.scriptPath+"/assets/martini.png');")
+            self.statusShield_lbl.setStyleSheet("border-image:url('"+self.scriptPath+"/assets/active_shield.svg');")
+        else:
+            self.status_lbl.setText("SwiftBlock is disabled")
+            self.toggleStatus_btn.setText("Enable")
+            self.background_lbl.setStyleSheet("background-image:url('"+self.scriptPath+"/assets/autumn.png');")
+            self.statusShield_lbl.setStyleSheet("border-image:url('"+self.scriptPath+"/assets/inactive_shield.svg');")
+
             
     #*fetches and shows user's host sources on the sourcesList:
     def loadSrcData(self):
@@ -90,41 +98,59 @@ class Ui(QtWidgets.QWidget):
         self.sourceURL_tf.setText('')
         self.sourcesForm_widget.setDisabled(True)  
         self.sourceDelete_btn.setDisabled(True)
-
-    def loadCustomLst(self):
-        self.customLst=self.parser.customlst("customlst")
-        self.customLst_edit.setPlainText(self.customLst)
-    
-    def loadAllowLst(self):
-        self.allowLst=self.parser.customlst("allowlst")
-        self.allowLst_edit.setPlainText(self.allowLst)
     
     #*A vital function that assigns all widgets handlers(slots) for specific events(signals):
     def SignalSlotConfig(self):
         #*for events occurring in status tab:
+        self.toggleStatus_btn.clicked.connect(self.toggleStatusClicked)
         self.manageRules_btn.clicked.connect(self.openRuleManager)
+        self.updateSources_btn.clicked.connect(self.updateSourcesClicked)
         #*for events occurring in sources tab:
         self.sourcesList.selectionModel().currentChanged.connect(self.sourceSelected)
         self.sourceAdd_btn.clicked.connect(self.addBtnClicked)
         self.sourceDelete_btn.clicked.connect(self.deleteBtnClicked)
         self.sourceSave_btn.clicked.connect(self.sourceSaveBtnClicked)
-
-        #*for events occurring in custom list tab:
-        self.customLst_edit.textChanged.connect(self.customLstTextChanged)
-        self.customSave_btn.clicked.connect(self.customSaveBtnClicked)
-        self.customCancel_btn.clicked.connect(self.customCancelBtnClicked)
-
-        #*for events occurring in allow list tab:
-        self.allowLst_edit.textChanged.connect(self.allowLstTextChanged)
-        self.allowSave_btn.clicked.connect(self.allowSaveBtnClicked)
-        self.allowCancel_btn.clicked.connect(self.allowCancelBtnClicked)
+        #*for events occurring in the about tab:
+        self.gitRepo_btn.clicked.connect(self.gitRepo_btnClicked)
         
-    
     #*SLOTS FOR EACH SIGNAL BELOW:
     #*slots for status tab:
+    #*Enables or disables swiftblock:
+    def toggleStatusClicked(self):
+        #*If swiftblock is enabled, disable it:
+        if self.status:
+            self.status=False
+            self.parser.write_changes(purge=True)
+            #*Reload the status to reflect the change in the GUI:
+            self.loadStatus()
+        #*If swiftblock is disabled, enable it:
+        else:
+            self.status=False
+            self.parser.write_changes()
+            #*Reload the status to reflect the change in the GUI:
+            self.loadStatus()
+
+    #*Opens the rule manager window:       
     def openRuleManager(self):
         self.rm=RuleManager(self.scriptPath)
         self.hide()
+
+    #*Updates the sources(fetches them fro their origin) and then regenerates hosts file:
+    def updateSourcesClicked(self):
+        try:
+            self.parser.generateSourceRules(updateSources=True)
+            self.parser.regen_hosts()
+            self.loadStatus()#*Refresh the blocked/redirected/allowed counts after the update
+            #*Inform the user that the update succeeded:
+            msg=QtWidgets.QMessageBox()
+            msg.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
+            msg.setWindowTitle("Success")
+            msg.setText("Sources updated successfully and changes applied!")
+            msg.setIcon(QtWidgets.QMessageBox.Icon.Information)
+            msg.exec()
+        except Exception as err:
+            self.err_msg(err)
+
     #*slots for the sources tab:
     def sourceSelected(self,current):
         #*Make sure the list isnt empty(which makes selected item None type)
@@ -211,56 +237,7 @@ class Ui(QtWidgets.QWidget):
             #*re-enable the save btn
             self.sourceSave_btn.setDisabled(False)
     
+    #*Slots for the about tab:
+    def gitRepo_btnClicked(self):
+        webbrowser.open_new_tab("https://github.com")
 
-    #*Slots for custom list tab:
-    def customLstTextChanged(self):
-        self.customSave_btn.setDisabled(False)
-        self.customCancel_btn.setDisabled(False)
-
-    def customSaveBtnClicked(self):
-        self.customSave_btn.setDisabled(True)
-        try:
-            self.parser.customlst("customlst",self.customLst_edit.toPlainText())
-            self.loadCustomLst()
-            self.showStatus_lbl("Saved and applied successfully!",self.customStatus_lbl,True)
-            self.customSave_btn.setDisabled(True)
-            self.customCancel_btn.setDisabled(True)
-        except Exception as err:
-            self.err_msg(err)
-            self.showStatus_lbl("Oops! An error occurred",self.customStatus_lbl)
-            self.customSave_btn.setDisabled(False)
-            
-    def customCancelBtnClicked(self):
-        print("This:",self.customLst)
-        self.customLst_edit.setPlainText(self.customLst)
-        self.customSave_btn.setDisabled(False)
-        self.customCancel_btn.setDisabled(True)
-
-
-    #*Slots for the allow list tab:
-    def allowLstTextChanged(self):
-        self.allowSave_btn.setDisabled(False)
-        self.allowCancel_btn.setDisabled(False)
-
-    def allowSaveBtnClicked(self):
-        self.allowSave_btn.setDisabled(True)
-        try:
-            self.parser.customlst("allowlst",self.allowLst_edit.toPlainText())
-            self.loadAllowLst()
-            self.showStatus_lbl("Saved and applied successfully!",self.allowStatus_lbl,True)
-            self.allowSave_btn.setDisabled(True)
-            self.allowCancel_btn.setDisabled(True)
-        except Exception as err:
-            self.err_msg(err)
-            self.showStatus_lbl("Oops! An error occurred",self.allowStatus_lbl)
-            self.allowSave_btn.setDisabled(False)
-            
-    def allowCancelBtnClicked(self):
-        print("This:",self.allowLst)
-        self.allowLst_edit.setPlainText(self.allowLst)
-        self.allowSave_btn.setDisabled(True)
-        self.allowCancel_btn.setDisabled(True)
-
-app=QtWidgets.QApplication(sys.argv)
-ui=Ui()
-sys.exit(app.exec())

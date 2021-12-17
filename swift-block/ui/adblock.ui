@@ -29,7 +29,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Adblock</string>
+   <string>SwiftBlock</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
@@ -56,21 +56,27 @@
       <widget class="QPushButton" name="manageRules_btn">
        <property name="geometry">
         <rect>
-         <x>240</x>
-         <y>210</y>
-         <width>101</width>
+         <x>90</x>
+         <y>340</y>
+         <width>151</width>
          <height>41</height>
         </rect>
        </property>
        <property name="text">
-        <string>Rule Manager</string>
+        <string> Edit Rules</string>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
        </property>
       </widget>
       <widget class="QGroupBox" name="groupBox">
        <property name="geometry">
         <rect>
          <x>30</x>
-         <y>90</y>
+         <y>250</y>
          <width>151</width>
          <height>80</height>
         </rect>
@@ -96,7 +102,7 @@
          <string notr="true"/>
         </property>
         <property name="text">
-         <string>NaN</string>
+         <string>0</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -107,7 +113,7 @@
        <property name="geometry">
         <rect>
          <x>210</x>
-         <y>90</y>
+         <y>250</y>
          <width>151</width>
          <height>80</height>
         </rect>
@@ -130,7 +136,7 @@
          </font>
         </property>
         <property name="text">
-         <string>NaN</string>
+         <string>0</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -141,7 +147,7 @@
        <property name="geometry">
         <rect>
          <x>390</x>
-         <y>90</y>
+         <y>250</y>
          <width>151</width>
          <height>80</height>
         </rect>
@@ -164,14 +170,14 @@
          </font>
         </property>
         <property name="text">
-         <string>NaN</string>
+         <string>0</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
         </property>
        </widget>
       </widget>
-      <widget class="QLabel" name="label_2">
+      <widget class="QLabel" name="statusTab_versionlbl">
        <property name="geometry">
         <rect>
          <x>470</x>
@@ -181,20 +187,23 @@
         </rect>
        </property>
        <property name="text">
-        <string>v0.0-ALPHA</string>
+        <string>v0.1-Beta</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="background_lbl">
        <property name="geometry">
         <rect>
          <x>0</x>
          <y>0</y>
          <width>581</width>
-         <height>91</height>
+         <height>211</height>
         </rect>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color:qlineargradient(spread:pad,x1:0,y1:0,x2:0,y2:1,stop:0 rgba(154,205,50,1),stop:1 rgba(154,205,50,0.5))</string>
+        <string notr="true"/>
        </property>
        <property name="text">
         <string/>
@@ -205,7 +214,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>191</width>
+         <width>201</width>
          <height>51</height>
         </rect>
        </property>
@@ -232,7 +241,7 @@
         <rect>
          <x>90</x>
          <y>40</y>
-         <width>171</width>
+         <width>221</width>
          <height>16</height>
         </rect>
        </property>
@@ -246,14 +255,88 @@
         <string>Open source ad blocker</string>
        </property>
       </widget>
-      <zorder>label</zorder>
+      <widget class="QLabel" name="status_lbl">
+       <property name="geometry">
+        <rect>
+         <x>180</x>
+         <y>160</y>
+         <width>221</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <italic>false</italic>
+        </font>
+       </property>
+       <property name="text">
+        <string>SWIFTBLOCK STATUS</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="statusShield_lbl">
+       <property name="geometry">
+        <rect>
+         <x>250</x>
+         <y>80</y>
+         <width>81</width>
+         <height>71</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-image:url(&quot;&quot;)</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="toggleStatus_btn">
+       <property name="geometry">
+        <rect>
+         <x>250</x>
+         <y>180</y>
+         <width>90</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Disable</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="updateSources_btn">
+       <property name="geometry">
+        <rect>
+         <x>340</x>
+         <y>340</y>
+         <width>151</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Update Sources</string>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+      </widget>
+      <zorder>background_lbl</zorder>
       <zorder>manageRules_btn</zorder>
       <zorder>groupBox</zorder>
       <zorder>groupBox_2</zorder>
       <zorder>groupBox_3</zorder>
-      <zorder>label_2</zorder>
+      <zorder>statusTab_versionlbl</zorder>
       <zorder>label_3</zorder>
       <zorder>label_4</zorder>
+      <zorder>status_lbl</zorder>
+      <zorder>statusShield_lbl</zorder>
+      <zorder>toggleStatus_btn</zorder>
+      <zorder>updateSources_btn</zorder>
      </widget>
      <widget class="QWidget" name="sources_tab">
       <attribute name="title">
@@ -271,9 +354,9 @@
        <widget class="QPushButton" name="sourceSave_btn">
         <property name="geometry">
          <rect>
-          <x>230</x>
+          <x>210</x>
           <y>150</y>
-          <width>111</width>
+          <width>131</width>
           <height>31</height>
          </rect>
         </property>
@@ -363,13 +446,13 @@
         <rect>
          <x>210</x>
          <y>20</y>
-         <width>341</width>
+         <width>351</width>
          <height>51</height>
         </rect>
        </property>
        <property name="text">
-        <string>Add a new hosts source or Select a source from the list to
-edit or delete.</string>
+        <string>Add a new hosts source or Select a source from the list
+to edit or delete.</string>
        </property>
       </widget>
       <widget class="QPushButton" name="sourceAdd_btn">
@@ -435,160 +518,118 @@ edit or delete.</string>
        </property>
       </widget>
      </widget>
-     <widget class="QWidget" name="deny_tab">
+     <widget class="QWidget" name="about_tab">
       <attribute name="title">
-       <string>Deny List</string>
+       <string>About</string>
       </attribute>
-      <widget class="QPlainTextEdit" name="customLst_edit">
+      <widget class="QLabel" name="label_5">
        <property name="geometry">
         <rect>
-         <x>0</x>
-         <y>60</y>
-         <width>551</width>
-         <height>281</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="customSave_btn">
-       <property name="geometry">
-        <rect>
-         <x>350</x>
-         <y>350</y>
+         <x>240</x>
+         <y>170</y>
          <width>91</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Save</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="customCancel_btn">
-       <property name="geometry">
-        <rect>
-         <x>460</x>
-         <y>350</y>
-         <width>91</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Undo Changes</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="customStatus_lbl">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>350</y>
-         <width>331</width>
-         <height>30</height>
+         <height>16</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>10</pointsize>
+         <pointsize>11</pointsize>
          <weight>75</weight>
+         <italic>false</italic>
          <bold>true</bold>
         </font>
        </property>
        <property name="styleSheet">
-        <string notr="true"/>
+        <string notr="true">font-weight:bold;</string>
        </property>
        <property name="text">
-        <string>ERROR</string>
+        <string>SwiftBlock</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
        </property>
       </widget>
-      <widget class="QLabel" name="customInfo_lbl">
+      <widget class="QLabel" name="aboutTab_versionlbl">
        <property name="geometry">
         <rect>
-         <x>0</x>
-         <y>10</y>
-         <width>551</width>
-         <height>51</height>
+         <x>250</x>
+         <y>200</y>
+         <width>71</width>
+         <height>20</height>
         </rect>
        </property>
        <property name="text">
-        <string>This is a custom list if you wish to block/redirect certain domains. Only accepts one rule per line</string>
+        <string>v0.1-Beta</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
-     </widget>
-     <widget class="QWidget" name="allow_tab">
-      <attribute name="title">
-       <string>Allow List</string>
-      </attribute>
-      <widget class="QPlainTextEdit" name="allowLst_edit">
+      <widget class="QLabel" name="appIcon_lbl">
        <property name="geometry">
         <rect>
-         <x>0</x>
-         <y>60</y>
-         <width>551</width>
-         <height>281</height>
+         <x>230</x>
+         <y>40</y>
+         <width>111</width>
+         <height>121</height>
         </rect>
-       </property>
-      </widget>
-      <widget class="QLabel" name="allowInfo_lbl">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>10</y>
-         <width>551</width>
-         <height>51</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>This is a custom allow list if you wish to allow certain domains. Only accepts one rule per line</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="allowCancel_btn">
-       <property name="geometry">
-        <rect>
-         <x>460</x>
-         <y>350</y>
-         <width>91</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Undo Changes</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="allowSave_btn">
-       <property name="geometry">
-        <rect>
-         <x>350</x>
-         <y>350</y>
-         <width>91</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Save</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="allowStatus_lbl">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>350</y>
-         <width>331</width>
-         <height>30</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
        </property>
        <property name="styleSheet">
         <string notr="true"/>
        </property>
        <property name="text">
-        <string>ERROR</string>
+        <string/>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="gitRepo_btn">
+       <property name="geometry">
+        <rect>
+         <x>240</x>
+         <y>300</y>
+         <width>101</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Git Repo</string>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_9">
+       <property name="geometry">
+        <rect>
+         <x>150</x>
+         <y>240</y>
+         <width>271</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>A swift host-based ad and tracker blocker,</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_10">
+       <property name="geometry">
+        <rect>
+         <x>150</x>
+         <y>260</y>
+         <width>271</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Made with ❤️ by Xploreinfinity</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
