@@ -1,13 +1,15 @@
 from PyQt6 import QtWidgets,QtCore,QtGui,uic
-import sys,Parser,os,webbrowser
-from elevate import elevate
-from RuleManager import RuleManager
+import sys,os,inspect
+import Parser
+import elevate
+import RuleManager
 class Ui(QtWidgets.QWidget):
     def __init__(self):
-        elevate()
+        #*Privilege escalation
+        elevate.elevate()
         super().__init__()
         #*load the ui file
-        self.scriptPath=os.path.abspath(os.path.dirname(sys.argv[0]))
+        self.scriptPath=os.path.abspath(os.path.dirname(inspect.getsourcefile(lambda:0)))
         uic.loadUi(self.scriptPath+"/ui/adblock.ui",self)
         #*init the library for interacting with host sources,etc...
         #!WARNING:This changes the current directory
@@ -42,6 +44,8 @@ class Ui(QtWidgets.QWidget):
         #*Reconfig for the about tab:
         self.gitRepo_btn.setIcon(QtGui.QIcon(self.scriptPath+'/assets/github.svg'))
         self.gitRepo_btn.setIconSize(QtCore.QSize(35,50))
+        self.license_btn.setIcon(QtGui.QIcon(self.scriptPath+'/assets/license.png'))
+        self.license_btn.setIconSize(QtCore.QSize(30,30))
         self.appIcon_lbl.setStyleSheet('border-image:url("'+self.scriptPath+'/assets/app_icon.svg");')
         
     #*Several utility functions that prevent code repetition:
@@ -112,6 +116,7 @@ class Ui(QtWidgets.QWidget):
         self.sourceSave_btn.clicked.connect(self.sourceSaveBtnClicked)
         #*for events occurring in the about tab:
         self.gitRepo_btn.clicked.connect(self.gitRepo_btnClicked)
+        self.license_btn.clicked.connect(self.license_btnClicked)
         
     #*SLOTS FOR EACH SIGNAL BELOW:
     #*slots for status tab:
@@ -132,7 +137,7 @@ class Ui(QtWidgets.QWidget):
 
     #*Opens the rule manager window:       
     def openRuleManager(self):
-        self.rm=RuleManager(self.scriptPath)
+        self.rm=RuleManager.RuleManager(self.scriptPath)
         self.hide()
 
     #*Updates the sources(fetches them fro their origin) and then regenerates hosts file:
@@ -177,6 +182,8 @@ class Ui(QtWidgets.QWidget):
         self.sourceURL_tf.setText('')
         self.editMode=False
         self.editMode_lbl.setText("Adding a new source:")
+        #*Also hide any previous messages:
+        self.formStatus_lbl.hide()
 
     def deleteBtnClicked(self):
         #*ensure that a source from the list is selected,warn the user otherwise:    
@@ -239,5 +246,10 @@ class Ui(QtWidgets.QWidget):
     
     #*Slots for the about tab:
     def gitRepo_btnClicked(self):
-        webbrowser.open_new_tab("https://github.com")
+        self.err_msg("We're sorry we can't open this for you.\nTo see the git repo,please visit 'https://github.com/XploreInfinity/swift-block' in your web-browser.\nReason: Since swiftblock runs as root/administrator user,opening a browser window while possessing such phenomenal privileges is unsafe")
+        #webbrowser.open("https://github.com/XploreInfinity/swift-block")
+
+    def license_btnClicked(self):
+        self.err_msg("We're sorry we can't open this for you.\nTo see the license,please visit 'https://github.com/XploreInfinity/swift-block/LICENSE' in your web-browser.\nReason: Since swiftblock runs as root/administrator user,opening a browser window while possessing such phenomenal privileges is unsafe")
+        #webbrowser.open("https://github.com/XploreInfinity/swift-block/license")
 

@@ -525,10 +525,10 @@ to edit or delete.</string>
       <widget class="QLabel" name="label_5">
        <property name="geometry">
         <rect>
-         <x>240</x>
+         <x>230</x>
          <y>170</y>
-         <width>91</width>
-         <height>16</height>
+         <width>111</width>
+         <height>20</height>
         </rect>
        </property>
        <property name="font">
@@ -569,13 +569,13 @@ to edit or delete.</string>
        <property name="geometry">
         <rect>
          <x>230</x>
-         <y>40</y>
+         <y>50</y>
          <width>111</width>
-         <height>121</height>
+         <height>111</height>
         </rect>
        </property>
        <property name="styleSheet">
-        <string notr="true"/>
+        <string notr="true">border-image:url(&quot;/media/mint/81D3-9664/swift-block/swift-block/assets/app_icon.svg&quot;);</string>
        </property>
        <property name="text">
         <string/>
@@ -587,7 +587,7 @@ to edit or delete.</string>
       <widget class="QPushButton" name="gitRepo_btn">
        <property name="geometry">
         <rect>
-         <x>240</x>
+         <x>160</x>
          <y>300</y>
          <width>101</width>
          <height>41</height>
@@ -633,6 +633,25 @@ to edit or delete.</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="license_btn">
+       <property name="geometry">
+        <rect>
+         <x>300</x>
+         <y>300</y>
+         <width>101</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>License</string>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
        </property>
       </widget>
      </widget>

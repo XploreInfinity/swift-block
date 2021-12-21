@@ -1,5 +1,6 @@
 from PyQt6 import QtWidgets,QtGui,QtCore,uic
-import os,sys,Parser
+import os,sys
+import Parser
 class RuleManager(QtWidgets.QWidget):
     def __init__(self,scriptPath):
         super().__init__()
@@ -337,8 +338,8 @@ class RuleManager(QtWidgets.QWidget):
         os.chdir(self.scriptPath)
         self.hide()
         self.parser.close_db()
-        from main import Ui
-        self.home=Ui()
+        import main
+        self.home=main.Ui()
         
 
     #*Maps each Signal to its Slot function:

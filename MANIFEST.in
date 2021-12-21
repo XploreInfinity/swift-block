@@ -1,0 +1,2 @@
+recursive-include ./swift_block/assets/ *
+recursive-include ./swift_block/ui/ *
