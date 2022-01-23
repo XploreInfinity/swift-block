@@ -187,7 +187,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>v0.1-Beta</string>
+        <string>v0.2-Beta</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -221,7 +221,6 @@
        <property name="font">
         <font>
          <pointsize>25</pointsize>
-         <weight>75</weight>
          <italic>true</italic>
          <bold>true</bold>
         </font>
@@ -429,7 +428,6 @@
         <property name="font">
          <font>
           <pointsize>10</pointsize>
-          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -490,7 +488,6 @@ to edit or delete.</string>
        <property name="font">
         <font>
          <pointsize>10</pointsize>
-         <weight>75</weight>
          <bold>true</bold>
         </font>
        </property>
@@ -534,7 +531,6 @@ to edit or delete.</string>
        <property name="font">
         <font>
          <pointsize>11</pointsize>
-         <weight>75</weight>
          <italic>false</italic>
          <bold>true</bold>
         </font>
@@ -559,7 +555,7 @@ to edit or delete.</string>
         </rect>
        </property>
        <property name="text">
-        <string>v0.1-Beta</string>
+        <string>v0.2-Beta</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>

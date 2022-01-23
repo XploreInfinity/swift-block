@@ -138,7 +138,7 @@ class Ui(QtWidgets.QWidget):
     #*Opens the rule manager window:       
     def openRuleManager(self):
         self.rm=RuleManager.RuleManager(self.scriptPath)
-        self.close()
+        self.hide()
         
 
     #*Updates the sources(fetches them fro their origin) and then regenerates hosts file:

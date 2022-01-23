@@ -1,7 +1,7 @@
 <h1 align='center'> Swift-Block</h1>
 <p align='center'>
 <img src="swift_block/assets/app_icon.svg" height="200px" width="200px"/><br/>
-Version:0.1-beta
+Version:0.2-beta
 </p>
 
 **About:**
@@ -16,21 +16,31 @@ Swiftblock is a free and open-source hosts file based ad,malware and tracker blo
 
 **Supported Platforms:**
 
-Most linux distributions, Windows, FreeBSD and MacOS[Testing on all these platforms is pending. Please note though, that I currently have no plans to test it on MacOS]
+Most linux distributions, Windows, FreeBSD and MacOS[Testing on FreeBSD and MacOS is pending. Please note though, that I currently have no plans to test it on MacOS]
 
 **Run Instructions:**
-To run swift block,execute the following commands in your terminal/command prompt:
+
+To run swift block,execute the following commands as root/Administrator in your terminal/command prompt:
 
 * First get all the dependencies of swift_block by running the following:
-* `python -m pip install pyqt6>=6.2.2` on Linux/FreeBSD/MacOS or `py -m pip install pyqt6>=6.2.2` on Windows
+* `python -m pip install pyqt6 requests` on Linux/FreeBSD/MacOS or `py -m pip install pyqt6 requests` on Windows
 * Next,open the terminal/command prompt in the root folder of the project
 * `cd swift_block`
 * For Linux/FreeBSD/MacOS: `python __init__.py`
 * For Windows `py __init__.py`
 * Swift-Block should now be running
 
+**SPECIAL INSTRUCTIONS FOR WINDOWS USERS[VERY IMPORTANT]:**
+
+Windows has issues with larger hosts files.The DNS Client service needs to be disabled to mitigate this. Recent changes in security within Windows 10 denies access to changing services via other tools except registry hacks. Use the [this cmd file](https://github.com/StevenBlack/hosts/blob/master/disable-dnscache-service-win.cmd)(Obviously,run this file as an Administrator) to make proper changes to the Windows registry. You will need to reboot your device once that's done.
+
 **Why the weird way of distribution?**
+
 I'm experiencing several issues with packaging and publishing swift-block on pypi,until I resolve those issues, I'm afraid this is the only way swift-block will be distributed.
+
+**Why are my changes not applied?**
+
+Sometimes, to refresh the hosts file, a reboot is required. If you think your changes haven't been applied, either reboot or follow [this guide](https://github.com/StevenBlack/hosts#reloading-hosts-file).
 
 **Inspiration:**
 
@@ -39,7 +49,7 @@ Swiftblock is inspired from [Adaway](https://adaway.org) and uses some UX concep
 **For Contributors:**
 
 * I've used qt-designer to create all the GUI interfaces,kindly use the same/another compatible designer for making any modifications in GUI. All the ui files are in `swift_block/ui`
-* `swift_block/__init.py` is the entry point/script executed to initialise everything
+* `swift_block/__init__.py` is the entry point/script executed to initialise everything
 * `swift_block/main.py` is the home page of swift-block - it offers users options to manage their hosts sources,update source files, enable/disable swift-block and other misc. stuff.
 * `swift_block/Parser.py` is the heart of swift-block, with low level functions for performing operations on hosts files and sources,first-start,restoring/replacing corrupt files,validation tasks, etc.[It is a non-GUI module]
 * `swift_block/RuleManager.py` is the GUI rule editor. It offers users options to block/redirect/allow custom/specific hostnames and also allow or redirect the hostnames being blocked by the source files

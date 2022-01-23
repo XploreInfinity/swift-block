@@ -39,9 +39,8 @@ class Parser:
             #*initialise the database:
             self.init_db()
             
-            print('Generating the first hosts file...')
+            print('Generating the first hosts file:')
             self.regen_hosts()
-            print('All done :)')
 
 
 
