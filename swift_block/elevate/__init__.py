@@ -1,7 +1,7 @@
 import sys
 
 
-def elevate(show_console=True, graphical=True):
+def elevate(file_path,show_console=True, graphical=True):
     """
     Re-launch the current process with root/admin privileges
 
@@ -19,5 +19,5 @@ def elevate(show_console=True, graphical=True):
         from .windows import elevate
     else:
         from .posix import elevate
-    elevate(show_console, graphical)
+    elevate(file_path,show_console, graphical)
 

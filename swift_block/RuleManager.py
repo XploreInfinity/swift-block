@@ -1,6 +1,16 @@
+'''
+Copyright (C) 2021 xploreinfinity
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 3.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>. 
+'''
+
 from PyQt6 import QtWidgets,QtGui,QtCore,uic
 import os,sys
-import Parser
+from swift_block import Parser
 class RuleManager(QtWidgets.QWidget):
     def __init__(self,scriptPath):
         super().__init__()
@@ -29,6 +39,7 @@ class RuleManager(QtWidgets.QWidget):
         self.reconf_ui()
 
     def reconf_ui(self):
+        self.setWindowIcon(QtGui.QIcon(self.scriptPath+"/assets/app_icon.svg"))
         #*Apply icons to the home button on each tab:
         #*For sourceDefine_tab:
         self.sourceBlockedHome_btn.setIcon(QtGui.QIcon(self.scriptPath+"/assets/home.svg"))
@@ -338,7 +349,7 @@ class RuleManager(QtWidgets.QWidget):
         os.chdir(self.scriptPath)
         self.hide()
         self.parser.close_db()
-        import main
+        from swift_block import main
         self.home=main.Ui()
         
 
@@ -586,7 +597,7 @@ class RuleManager(QtWidgets.QWidget):
     #*Removes user selected rule from the redirected list:    
     def deleteRedirectedHostClicked(self):
         #*Display a prompt asking the user for confirmation:
-        question=QtWidgets.QMessageBox(QtWidgets.QMessageBox.Icon.Question,"Please Confirm","Are you sure remove this hostname from the allowed list?",(QtWidgets.QMessageBox.StandardButton.Yes|QtWidgets.QMessageBox.StandardButton.No))
+        question=QtWidgets.QMessageBox(QtWidgets.QMessageBox.Icon.Question,"Please Confirm","Are you sure remove this hostname from the redirected list?",(QtWidgets.QMessageBox.StandardButton.Yes|QtWidgets.QMessageBox.StandardButton.No))
         confirm=question.exec()
         if confirm==QtWidgets.QMessageBox.StandardButton.Yes:
             #*Get the hostname and IP  from redirectedTable:

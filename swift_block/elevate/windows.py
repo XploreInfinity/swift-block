@@ -63,7 +63,7 @@ CloseHandle.restype = BOOL
 
 # At last, the actual implementation!
 
-def elevate(show_console=True, graphical=True):
+def elevate(file_path,show_console=True, graphical=True):
     if windll.shell32.IsUserAnAdmin():
         return
 
@@ -73,7 +73,7 @@ def elevate(show_console=True, graphical=True):
         lpVerb=b'runas',
         lpFile=sys.executable.encode('cp1252'),
         lpParameters=subprocess.list2cmdline(
-            [realpath(sys.argv[0]), *sys.argv[1:]]
+            [realpath(file_path), *sys.argv[1:]]
         ).encode('cp1252'),
         nShow=int(show_console))
 

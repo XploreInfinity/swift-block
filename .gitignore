@@ -3,3 +3,6 @@ elevate/__pycache__
 swift_block/__pycache__
 .vscode
 testing
+build
+dist
+swift_block.egg-info

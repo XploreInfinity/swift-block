@@ -1,3 +1,13 @@
+## CHANGELOG
+
+**Version 0.3-beta:**
+
+* Created a Pypi package
+* Several improvements and bug fixes in `elevate`
+* Adjustments in code to adapt swift_block to run as a package
+* Swift-Block will now create a launcher/start menu shortcut on first run
+* Added an uninstaller
+
 **Version 0.2-beta:**
 
 * Windows testing completed.

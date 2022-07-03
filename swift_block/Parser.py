@@ -1,4 +1,14 @@
-import os,requests,re,sqlite3,ipaddress,sys
+'''
+Copyright (C) 2021 xploreinfinity
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 3.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>. 
+'''
+
+import os,requests,re,sqlite3,ipaddress,sys,inspect,subprocess
 class Parser:
     def __init__(self):
 
@@ -8,6 +18,55 @@ class Parser:
         r'^127\.0\.0\.1( +)local$',
         r'^255\.255\.255\.255( +)broadcasthost$',
         r'^0.0.0.0( +)0.0.0.0$']
+
+        #*Perform a few pre-run checks:
+        self.prerun_checks()
+
+    #*Checks whether the menu launcher and swiftblock user directory are created. If not, it regenerates them:
+    def prerun_checks(self):
+        #*TODO: ADD SUPPORT FOR MACOS LAUNCHER
+        #*Ensure a launcher shortcut is present,if not,regenerate:
+        try:
+            scriptPath=os.path.abspath(os.path.dirname(inspect.getsourcefile(lambda:0))).replace('\\','/')
+            if sys.platform.startswith('linux') or sys.platform.startswith('freebsd'):
+                install_path=''
+                #*Generally,.desktop files are stored in either of these two locations, so we will place our .desktop file in any one of these locations.
+                #*If any of the locations don't exist, don't create a .desktop file
+                if os.path.exists('/usr/share/applications'):
+                    install_path='/usr/share/applications'
+                elif os.path.exists('/usr/local/share/applications'):
+                    install_path='/usr/local/share/applications'
+                if install_path and not os.path.exists(install_path+'/SwiftBlock.desktop'):
+                    os.chdir(install_path)
+                    desktopFile = open('SwiftBlock.desktop','w')
+                    desktopFile.write(
+                    """
+                        [Desktop Entry]
+                        Name=Swift Block
+                        Comment= Block ads, trackers and malware swiftly
+                        Exec=swift-block
+                        Icon=%s/assets/app_icon.svg
+                        Terminal=false
+                        Type=Application
+                        Categories=Qt;System;
+                    """%scriptPath
+                    )
+                    desktopFile.close()
+            elif sys.platform.startswith('win32'):
+                import winshell
+                programData = os.getenv('ProgramData')
+                #*If programData exists and the swift block start shortcut doesn't, create it:
+                if programData and not os.path.exists(programData+'\\Microsoft\\Windows\\Start Menu\\Programs\\Swift-Block.lnk'):
+                    os.chdir(programData+'\\Microsoft\\Windows\\Start Menu\\Programs\\')
+                    with winshell.shortcut(programData+'\\Microsoft\\Windows\\Start Menu\\Programs\\'+'Swift-Block.lnk') as lnk:
+                        lnk.path = 'swift-block'
+                        lnk.description = 'Block ads, trackers and malware swiftly'
+            else:
+                print('Cant create a menu launcher(Platform not supported). Skipping... :(')
+        #*If an error occurs, warn the user, but proceed anyway since failing to create a launcher doesn't deter swift-block's functionality:
+        except Exception as err:
+            print('Oops! An error occurred while creating a menu launcher. Proceeding anyway.Error Details:\n',str(err))
+
         #*Ensure the swiftblock user directory and its components are present,if not, regenerate:
         try:
             os.chdir(os.path.expanduser("~/.swiftblock"))
@@ -38,12 +97,10 @@ class Parser:
 
             #*initialise the database:
             self.init_db()
-            
+
             print('Generating the first hosts file...')
             self.regen_hosts()
             print('All done :)')
-
-
 
     #*Initialises the DB and regenerates it,if DB file is found missing or corrupt:
     def init_db(self):
@@ -75,7 +132,7 @@ class Parser:
         query="SELECT * FROM sources;"
         result=self.cursor.execute(query)
         return result.fetchall()
-    
+
     #*This generates a basic hosts file consisting of rules compiled from various sources present in the DB
     def generateSourceRules(self,updateSources=False):
         #*Clear the sourceslist file to remove old rules:
@@ -97,7 +154,7 @@ class Parser:
                     source_file=open(name+".txt",'r')
                 #*We're using readlines() because its generally recommended and we wont have blank '' that are returned by read() when it reaches EOF
                 file_lst=set([i.strip() for i in source_file.readlines()])
-                main_sources=open('sourceslist','r')                
+                main_sources=open('sourceslist','r')
                 main_lst=set([i.strip() for i in main_sources.readlines()])
                 main_sources.close()
                 #*Find rules present in the current source file that arent in the main_sources file and then add those
@@ -111,7 +168,7 @@ class Parser:
                     main_sources.write(i+'\n')
                 main_sources.close()
 
-    #*This method will regenerate the hosts file with the various hosts sources                
+    #*This method will regenerate the hosts file with the various hosts sources
     def regen_hosts(self):
         #*Clean the hosts file to remove old rules
         main_hosts=open('hosts','w')
@@ -121,7 +178,7 @@ class Parser:
         main_sources=open('sourceslist','r')
         main_hosts.write(main_sources.read())
         main_hosts.close()
-        
+
         #*Next, add the user defined rules to the hosts file:
         user_hosts=open('userlist','r')
         user_list=[i.strip() for i in user_hosts.readlines()]
@@ -140,7 +197,7 @@ class Parser:
                 if i.split()[1]==j.split()[1]:
                     compiled_list.append(j)
                     replaced=True
-                    user_rules.append(j)            
+                    user_rules.append(j)
             if not replaced:
                 compiled_list.append(i)
         #*Now add other user defined rules which didn't replace any host defined rules:
@@ -177,7 +234,7 @@ class Parser:
         #*Write these changes to the system hosts file[only if swiftblock is active]:
         if blockerStatus:
             self.write_changes()
-        
+
     #*Downloads hosts files from remote sources(can also get files from filesystem-but this feature is currently unused):
     def download_source(self,name,url,offline=False):
         #*get the url corresponding to the source name:
@@ -204,7 +261,7 @@ class Parser:
                             clean=False
                             break
                     if clean:
-                        
+
                         #*Replace 0.0.0.0(or any other source specified ip) with 127.0.0.1 for safety reasons.
                         #!Do this only for remote sources.User's custom list isn't affected.
                         if not offline:
@@ -299,7 +356,7 @@ class Parser:
             hostname = hostname[:-1] #*strip exactly one dot from the right, if present
         allowed = re.compile(r"^(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
         return all(allowed.match(x) for x in hostname.split("."))
-    
+
     #*Checks if given IPv4 is valid:
     def is_valid_ipv4(self,ipv4):
         try:
@@ -316,7 +373,8 @@ class Parser:
         if sys.platform.startswith('linux') or sys.platform.startswith('darwin') or sys.platform.startswith('freebsd'):
             file_path='/etc/hosts'
         elif sys.platform.startswith('win32'):
-            file_path='C:/Windows/System32/drivers/etc/hosts'#TODO:CHECK VALIDITY[\ characters might cause problems]
+            systemroot = os.getenv('SystemRoot')
+            file_path=systemroot+'\\System32\\drivers\\etc\\hosts'
         else:
             print('Unsupported platform!!')
             sys.exit()
@@ -328,7 +386,7 @@ class Parser:
         for i in file_contents:
             if i=="# SWIFTBLOCK RULESET BEGINS":
                 foundRuleSet=True
-                
+
         #*Get the statistics(no. of hosts blocked/redirected/allowed) from hosts file in swiftblock's user directory
         if os.path.exists('hosts'):
             main_hosts=open('hosts','r')
@@ -347,7 +405,7 @@ class Parser:
             return len(blocked),len(redirected),len(allowed),foundRuleSet
         else:
             return None,None,None,foundRuleSet
-    
+
     #*Writes new changes to the the system hosts file[the purge flag,when True will erase existing swiftblock ruleset and replace it with nothing]:
     def write_changes(self,purge=False):
         file_path=''#*Stores the path to the hosts file[this is platform-dependent]
@@ -355,7 +413,8 @@ class Parser:
         if sys.platform.startswith('linux') or sys.platform.startswith('darwin') or sys.platform.startswith('freebsd'):
             file_path='/etc/hosts'
         elif sys.platform.startswith('win32'):
-            file_path=r'C:\Windows\System32\drivers\etc\hosts'#TODO:CHECK VALIDITY[\ characters might cause problems]
+            systemroot = os.getenv('SystemRoot')
+            file_path=systemroot+'//System32//drivers//etc//hosts'
         else:
             print('Unsupported platform!!')
             sys.exit()
@@ -374,7 +433,7 @@ class Parser:
                     withinRuleset=False
                 else:
                     withinRuleset=True
-        
+
         #*Write the changes to the swiftblock ruleset, but first, write contents that were present in the file outside of the swiftblock ruleset:
         system_hosts=open(file_path,'w')
         for i in foreign_contents:
@@ -392,3 +451,27 @@ class Parser:
             #*Write the line that marks the ending of the swiftblock-ruleset:
             system_hosts.write("# SWIFTBLOCK RULESET ENDS"+'\n')
         system_hosts.close()
+
+    #*Uninstalls swiftblock and removes the menu launcher (but not the swiftblock user directory):
+    def uninstall(self):
+        #*Remove the menu launcher:
+        scriptPath=os.path.abspath(os.path.dirname(inspect.getsourcefile(lambda:0))).replace('\\','/')
+        if sys.platform.startswith('linux') or sys.platform.startswith('freebsd'):
+            file_path=''
+            #*Our .desktop file is stored in either of these two locations. If neither locations exist,then we know we didn't create a .desktop file
+            if os.path.exists('/usr/share/applications'):
+                file_path='/usr/share/applications'
+            elif os.path.exists('/usr/local/share/applications'):
+                file_path='/usr/local/share/applications'
+            if file_path and os.path.exists(file_path+'/SwiftBlock.desktop'):
+                    os.unlink(file_path+'/SwiftBlock.desktop')
+        elif sys.platform.startswith('win32'):
+            programData = os.getenv('ProgramData')
+            #*If programData and the swift block start menu shortcut exist,delete the swiftblock start menu shortcut:
+            if programData and os.path.exists(programData+'\\Microsoft\\Windows\\Start Menu\\Programs\\Swift-Block.lnk'):
+                os.unlink(programData+'\\Microsoft\\Windows\\Start Menu\\Programs\\Swift-Block.lnk')
+
+        #*Uninstall the swift_block package:
+        subprocess.check_call([sys.executable] + ' -m pip uninstall swift_block -y'.split())
+        #*Now exit swift-block:
+        exit()

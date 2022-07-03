@@ -22,11 +22,11 @@ def quote_applescript(string):
     return '"%s"' % "".join(charmap.get(char, char) for char in string)
 
 
-def elevate(show_console=True, graphical=True):
+def elevate(file_path,show_console=True, graphical=True):
     if os.getuid() == 0:
         return
 
-    args = [sys.executable, os.path.realpath(sys.argv[0]), *sys.argv[1:]]
+    args = [sys.executable, os.path.realpath(file_path)]
     commands = []
 
     if graphical:
@@ -39,14 +39,13 @@ def elevate(show_console=True, graphical=True):
                 "without altering line endings"
                 % quote_applescript(quote_shell(args))])
 
-        if sys.platform.startswith("linux"):
-            print("pkexec env DISPLAY={0} XAUTHORITY={1}".format(os.environ.get("DISPLAY"),os.environ.get("XAUTHORITY")))
-            print("Who am i?",os.getuid())
+        if sys.platform.startswith("linux") or sys.platform.startswith("freebsd"):
             commands.append(["pkexec"]+["env"]+["DISPLAY="+os.environ.get("DISPLAY")]+["XAUTHORITY="+os.environ.get("XAUTHORITY")]+args)
             commands.append(["gksudo"] + args)
             commands.append(["kdesudo"] + args)
 
     commands.append(["sudo"] + args)
+    commands.append(["doas"] + args)
 
     for args in commands:
         try:

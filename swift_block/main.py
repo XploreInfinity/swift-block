@@ -1,12 +1,20 @@
+'''
+Copyright (C) 2021 xploreinfinity
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 3.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>. 
+'''
+
 from PyQt6 import QtWidgets,QtCore,QtGui,uic
 import sys,os,inspect
-import Parser
-import elevate
-import RuleManager
+from swift_block import Parser
+#from swift_block import elevate
+from swift_block import RuleManager
 class Ui(QtWidgets.QWidget):
     def __init__(self):
-        #*Privilege escalation
-        elevate.elevate()
         super().__init__()
         #*load the ui file
         self.scriptPath=os.path.abspath(os.path.dirname(inspect.getsourcefile(lambda:0))).replace('\\','/')
@@ -20,7 +28,7 @@ class Ui(QtWidgets.QWidget):
         self.editMode=True #*controls whether the source editing form is set to edit source mode or add source mode
         self.selectedSource=''#*Will store QListWidgetItem that is currently selected by the user
         self.sourceDct={}#*Stores source names and corresponding source URLs for display in the source edit form when user clicks on a source
-        
+
         self.SignalSlotConfig()
         self.show()
         self.reconf_ui()
@@ -45,7 +53,9 @@ class Ui(QtWidgets.QWidget):
         self.gitRepo_btn.setIcon(QtGui.QIcon(self.scriptPath+'/assets/github.svg'))
         self.gitRepo_btn.setIconSize(QtCore.QSize(35,50))
         self.license_btn.setIcon(QtGui.QIcon(self.scriptPath+'/assets/license.png'))
-        self.license_btn.setIconSize(QtCore.QSize(30,30)) 
+        self.license_btn.setIconSize(QtCore.QSize(30,30))
+        self.uninstall_btn.setIcon(QtGui.QIcon(self.scriptPath+'/assets/uninstall.png'))
+        self.uninstall_btn.setIconSize(QtCore.QSize(30,30))
         self.appIcon_lbl.setStyleSheet("border-image:url("+self.scriptPath+"/assets/app_icon.svg);")
 
     #*Several utility functions that prevent code repetition:
@@ -87,7 +97,7 @@ class Ui(QtWidgets.QWidget):
             self.background_lbl.setStyleSheet("background-image:url('"+self.scriptPath+"/assets/autumn.png');")
             self.statusShield_lbl.setStyleSheet("border-image:url('"+self.scriptPath+"/assets/inactive_shield.svg');")
 
-            
+
     #*fetches and shows user's host sources on the sourcesList:
     def loadSrcData(self):
         self.sourcesList.clear()
@@ -100,9 +110,9 @@ class Ui(QtWidgets.QWidget):
         #*Reset the form and disable said form and the delete btn:
         self.sourceName_tf.setText('')
         self.sourceURL_tf.setText('')
-        self.sourcesForm_widget.setDisabled(True)  
+        self.sourcesForm_widget.setDisabled(True)
         self.sourceDelete_btn.setDisabled(True)
-    
+
     #*A vital function that assigns all widgets handlers(slots) for specific events(signals):
     def SignalSlotConfig(self):
         #*for events occurring in status tab:
@@ -117,7 +127,8 @@ class Ui(QtWidgets.QWidget):
         #*for events occurring in the about tab:
         self.gitRepo_btn.clicked.connect(self.gitRepo_btnClicked)
         self.license_btn.clicked.connect(self.license_btnClicked)
-        
+        self.uninstall_btn.clicked.connect(self.uninstall_btnClicked)
+
     #*SLOTS FOR EACH SIGNAL BELOW:
     #*slots for status tab:
     #*Enables or disables swiftblock:
@@ -135,11 +146,11 @@ class Ui(QtWidgets.QWidget):
             #*Reload the status to reflect the change in the GUI:
             self.loadStatus()
 
-    #*Opens the rule manager window:       
+    #*Opens the rule manager window:
     def openRuleManager(self):
         self.rm=RuleManager.RuleManager(self.scriptPath)
         self.close()
-        
+
 
     #*Updates the sources(fetches them fro their origin) and then regenerates hosts file:
     def updateSourcesClicked(self):
@@ -187,7 +198,7 @@ class Ui(QtWidgets.QWidget):
         self.formStatus_lbl.hide()
 
     def deleteBtnClicked(self):
-        #*ensure that a source from the list is selected,warn the user otherwise:    
+        #*ensure that a source from the list is selected,warn the user otherwise:
         if not self.selectedSource:
             self.showStatus_lbl("Select a source from the list first!",self.formStatus_lbl)
         else:
@@ -204,7 +215,7 @@ class Ui(QtWidgets.QWidget):
                     self.err_msg(err)
                     self.showStatus_lbl("Oops! An error occurred",self.formStatus_lbl)
                 self.sourceDelete_btn.setDisabled(True)
-    
+
     def sourceSaveBtnClicked(self):
         srcName=self.sourceName_tf.text()
         srcURL=self.sourceURL_tf.text()
@@ -212,7 +223,7 @@ class Ui(QtWidgets.QWidget):
             self.formStatus_lbl.setStyleSheet("color:white;background-color:crimson;font-weight:bold")
             self.formStatus_lbl.setText("Fields can't be empty!")
             self.formStatus_lbl.show()
-        #*ensure that a source from the list is selected,warn the user otherwise:    
+        #*ensure that a source from the list is selected,warn the user otherwise:
         elif not self.selectedSource and self.editMode:
             self.showStatus_lbl("Select a source from the list first!",self.formStatus_lbl)
         else:
@@ -227,10 +238,10 @@ class Ui(QtWidgets.QWidget):
                 except Exception as err:
                     self.err_msg(err)
                     self.showStatus_lbl("Oops! An error occurred",self.formStatus_lbl)
-                    #*calling this here incase the editing of the source succeeded but something else failed:(which would effectively make existing sourceList entries old and obsolete) 
+                    #*calling this here incase the editing of the source succeeded but something else failed:(which would effectively make existing sourceList entries old and obsolete)
                     self.loadSrcData()
-                
-            
+
+
             else:
                 try:
                     self.parser.add_source(srcName,srcURL)
@@ -239,12 +250,12 @@ class Ui(QtWidgets.QWidget):
                 except Exception as err:
                     self.err_msg(err)
                     self.showStatus_lbl("Oops! An error occurred",self.formStatus_lbl)
-                    #*calling this here incase the adding of the source succeeded but something else failed:(which would effectively make existing sourceList entries old and obsolete) 
+                    #*calling this here incase the adding of the source succeeded but something else failed:(which would effectively make existing sourceList entries old and obsolete)
                     self.loadSrcData()
-                
+
             #*re-enable the save btn
             self.sourceSave_btn.setDisabled(False)
-    
+
     #*Slots for the about tab:
     def gitRepo_btnClicked(self):
         import webbrowser
@@ -259,5 +270,20 @@ class Ui(QtWidgets.QWidget):
             webbrowser.open("https://github.com/XploreInfinity/swift-block/blob/main/LICENSE")
         else:
             self.err_msg("To see the license,visit 'https://github.com/XploreInfinity/swift-block/blob/main/LICENSE' in your web-browser.\n\nSince swiftblock runs as root/administrator user,we can't(safely)open it for you")
-        
 
+    def uninstall_btnClicked(self):
+        #*Ask the user if they really want to uninstall swift-block:
+        question=QtWidgets.QMessageBox(QtWidgets.QMessageBox.Icon.Question,"Please Confirm","Swift Block will be removed along with its menu launcher. Are you sure you want to continue?",(QtWidgets.QMessageBox.StandardButton.Yes|QtWidgets.QMessageBox.StandardButton.No))
+        confirm=question.exec()
+        if confirm==QtWidgets.QMessageBox.StandardButton.Yes:
+                try:
+                    #*Call the uninstaller:
+                    self.parser.uninstall()
+                except Exception as err:
+                    #*Unfortunately, windows doesnt allow running programs to be deleted. So uninstalling swiftblock from within swiftblock will certainly fail
+                    #*Pip will uninstall the package,but some .exe files will persist in the %TEMP% directory. This is a trivial faliure and not worth asking
+                    #*the user to manually uninstall swiftblock from cmd. Exit swiftblock and call it a day:
+                    if sys.platform.startswith('win32'):
+                        print(err)
+                        exit()
+                    self.err_msg(str(err)+'\nTry uninstalling swift-block using pip from your terminal/cmd')

@@ -7,4 +7,4 @@ root/admin privileges using one of the following mechanisms:
 - UAC (Windows)
 - AppleScript (macOS)
 - ``pkexec``, ``gksudo`` or ``kdesudo`` (Linux)
-- ``sudo`` (Linux, macOS)
+- ``sudo``, ``doas`` (Linux, macOS)

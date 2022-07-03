@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+Copyright (C) 2021 xploreinfinity
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 3.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>. 
+
+-->
+
 <ui version="4.0">
  <class>Form</class>
  <widget class="QWidget" name="Form">
@@ -180,14 +192,14 @@
       <widget class="QLabel" name="statusTab_versionlbl">
        <property name="geometry">
         <rect>
-         <x>470</x>
+         <x>490</x>
          <y>0</y>
          <width>71</width>
          <height>20</height>
         </rect>
        </property>
        <property name="text">
-        <string>v0.2-Beta</string>
+        <string>v0.3-Beta</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -555,7 +567,7 @@ to edit or delete.</string>
         </rect>
        </property>
        <property name="text">
-        <string>v0.2-Beta</string>
+        <string>v0.3-Beta</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -583,7 +595,7 @@ to edit or delete.</string>
       <widget class="QPushButton" name="gitRepo_btn">
        <property name="geometry">
         <rect>
-         <x>160</x>
+         <x>90</x>
          <y>300</y>
          <width>101</width>
          <height>41</height>
@@ -634,7 +646,7 @@ to edit or delete.</string>
       <widget class="QPushButton" name="license_btn">
        <property name="geometry">
         <rect>
-         <x>300</x>
+         <x>230</x>
          <y>300</y>
          <width>101</width>
          <height>41</height>
@@ -642,6 +654,25 @@ to edit or delete.</string>
        </property>
        <property name="text">
         <string>License</string>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="uninstall_btn">
+       <property name="geometry">
+        <rect>
+         <x>370</x>
+         <y>300</y>
+         <width>101</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Uninstall</string>
        </property>
        <property name="iconSize">
         <size>
