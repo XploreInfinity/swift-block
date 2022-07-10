@@ -1,7 +1,7 @@
 <h1 align='center'> Swift-Block</h1>
 <p align='center'>
 <img src="swift_block/assets/app_icon.svg" height="200px" width="200px"/><br/>
-Version:0.2-beta
+Version:0.3.1(beta)
 </p>
 
 ## About:
@@ -66,10 +66,8 @@ Swiftblock is inspired from [Adaway](https://adaway.org) and uses some UX concep
 * `swift_block/elevate` is a sub-package that provides privilege escalation functionality(Required to read/write to the system hosts file). It is my modification of the original and currently broken [elevate](https://github.com/barneygale/elevate).
 
 ### Attribution:
-
+* [Tattoo machine icons created by Smashicons - Flaticon](https://www.flaticon.com/free-icons/tattoo-machine)
 * [Uninstall icons created by Us and Up - Flaticon](https://www.flaticon.com/free-icons/uninstall)
 
 <hr />
-Made with ❤️ by Xploreinfinity
-
-P.S:Yes,I am aware swift-block's logo is that of [Swift lang](https://www.swift.org/), but there really aren't any better icons out there,sadly[None that suit the overall feel of swift-block,anyway].
+Made with ❤️ by Xploreinfinity ✧･ﾟ: ✧･ﾟ: :･ﾟ✧:･ﾟ✧ 

@@ -5,7 +5,7 @@ This program is free software: you can redistribute it and/or modify it under th
 
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>. 
+You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 '''
 
 import os,requests,re,sqlite3,ipaddress,sys,inspect,subprocess
@@ -111,9 +111,9 @@ class Parser:
         except:
             print('DB File corrupted or previously deleted.Regenerating...')
             self.cursor.execute("CREATE TABLE sources(name varchar(50) PRIMARY KEY,url varchar(500) UNIQUE);")
-            self.cursor.execute("INSERT INTO sources values('Adaway','https://adaway.org/hosts.txt');")
-            self.cursor.execute("INSERT INTO sources values('StevenBlack','https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts');")
-            self.cursor.execute("INSERT INTO sources values('Pete','https://pgl.yoyo.org/adservers/serverlist.php?hostformat=hosts&showintro=0&mimetype=plaintext');")
+            self.cursor.execute("INSERT INTO sources values('Adaway official hosts','https://adaway.org/hosts.txt');")
+            self.cursor.execute("INSERT INTO sources values('StevenBlack Unified hosts','https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts');")
+            self.cursor.execute("INSERT INTO sources values('Peter Lowe blocklist hosts','https://pgl.yoyo.org/adservers/serverlist.php?hostformat=hosts&showintro=0&mimetype=plaintext');")
             self.conn.commit()
 
     #*Closes connection to the DB(required to remove DB lock which might occur while switching between different app windows):

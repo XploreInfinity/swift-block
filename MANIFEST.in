@@ -1,2 +1,3 @@
-recursive-include ./swift_block/assets/ *
-recursive-include ./swift_block/ui/ *
+recursive-include ./swift_block/assets *
+include ./swift_block/assets/app_icon.ico
+recursive-include ./swift_block/ui *

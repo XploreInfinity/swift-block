@@ -1,5 +1,11 @@
 ## CHANGELOG
 
+**Version 0.3.1(beta):**
+
+* A cute new logo
+* Windows users: Swiftblock's logo shows up correctly on the taskbar instead of a generic python logo when running swiftblock.
+* Name of the hosts sources have been updated to match their official titles.
+
 **Version 0.3-beta:**
 
 * Created a Pypi package

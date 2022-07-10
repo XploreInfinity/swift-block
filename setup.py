@@ -13,7 +13,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 setuptools.setup(
     name="swift_block",
-    version="0.3",
+    version="0.3.1",
     author="Xploreinfinity",
     license="GPLv3",
     description="Swiftblock is a free and open-source hosts file based ad,malware and tracker blocker",

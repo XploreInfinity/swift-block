@@ -1,16 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<!--
-Copyright (C) 2021 xploreinfinity
-
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 3.
-
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>. 
-
--->
-
 <ui version="4.0">
  <class>Form</class>
  <widget class="QWidget" name="Form">
@@ -192,14 +180,14 @@ You should have received a copy of the GNU General Public License along with thi
       <widget class="QLabel" name="statusTab_versionlbl">
        <property name="geometry">
         <rect>
-         <x>490</x>
+         <x>480</x>
          <y>0</y>
-         <width>71</width>
+         <width>81</width>
          <height>20</height>
         </rect>
        </property>
        <property name="text">
-        <string>v0.3-Beta</string>
+        <string>v0.3.1(beta)</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -567,7 +555,7 @@ to edit or delete.</string>
         </rect>
        </property>
        <property name="text">
-        <string>v0.3-Beta</string>
+        <string>v0.3.1(beta)</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
